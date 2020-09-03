@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0C7266</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="white">#ffffff</color>
+    <color name="backgroundLeft">#0F85B4</color>
+    <color name="toolbarBackgroundBlack">#0A0A0A</color>
+    <color name="buttonsBackground">#618E24A5</color>
+    <color name="onlineStatus">#45FF00</color>
+    <color name="offlineStatus">#949494</color>
+    <color name="lastMessage">#3F3F3F</color>
+</resources>

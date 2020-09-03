@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ttlTextSize">30sp</dimen>
+    <dimen name="marginOfElements">25dp</dimen>
+    <dimen name="textSizeOfProfileElements">20dp</dimen>
+    <dimen name="textSizeOfSimpleElements">20dp</dimen>
+</resources>

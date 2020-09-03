@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name" id="@+id/chatName">ChatApp</string>
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+    <string name="usersFragTtl">All users</string>
+    <string name="password_updater_title">Enter email for change password</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="name_updater_title">Enter your name</string>
+    <string name="email_updater_title">Enter your email</string>
+    <string name="title_activity_chat_with_user">ChatWithUserActivity</string>
+    <string name="settingsMessageAboutBug">kocmo7@mail.ru it\'s my
+        email, if you find bug or you have idea about improving
+        app give me know </string>
+    <string name="settingsChooseTheme">Blue theme</string>
+</resources>
