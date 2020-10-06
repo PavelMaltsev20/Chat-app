@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ProfileActivity"
-    android:background="@drawable/profile_background">
+    android:background="@drawable/main_background">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_margin="@dimen/marginOfElements"
+        android:layout_margin="@dimen/standard_margin"
         android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
@@ -26,7 +26,7 @@
             android:id="@+id/profileTVEmail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_weight="1"
             android:text="Email"
             android:textSize="@dimen/textSizeOfProfileElements"
@@ -37,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileIV"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_toRightOf="@+id/profileTVEmail"
             android:layout_weight="2"
             android:text="Email"
@@ -58,7 +58,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileTVEmail"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_weight="1"
             android:text="Name "
             android:textSize="@dimen/textSizeOfProfileElements"
@@ -69,7 +69,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileTVEmail"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_toRightOf="@+id/profileTVName"
             android:layout_weight="2"
             android:text="Name "
@@ -90,7 +90,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileTVName"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_weight="1"
             android:text="Password"
             android:textSize="@dimen/textSizeOfProfileElements"
@@ -101,7 +101,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/profileTVName"
-            android:layout_margin="@dimen/marginOfElements"
+            android:layout_margin="@dimen/standard_margin"
             android:layout_toRightOf="@+id/profileTVPassword"
             android:layout_weight="2"
             android:text="Click here to change"

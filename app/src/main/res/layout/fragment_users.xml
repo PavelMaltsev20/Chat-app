@@ -14,7 +14,7 @@
         android:textSize="15dp"
         android:textAlignment="center"
         android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/marginOfElements"/>
+        android:layout_margin="@dimen/standard_margin"/>
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -22,6 +22,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/usersFragEditText"
-        android:layout_margin="@dimen/marginOfElements"/>
+        android:layout_margin="@dimen/standard_margin"/>
 
 </RelativeLayout>

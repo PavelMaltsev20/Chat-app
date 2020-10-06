@@ -1,18 +1,18 @@
-package com.example.pavel.chatapp.Adapter_Modul;
+package com.example.pavel.chatapp.Adapter_Modul.Items;
 
 public class MyChat {
 
     private String sender;
     private String receiver;
     private String message;
-    private boolean isseen;
+    private boolean isSeen;
     private boolean isNotified;
 
-    public MyChat(String sender, String receiver, String message, boolean isseen, boolean isNotified) {
+    public MyChat(String sender, String receiver, String message, boolean isSeen, boolean isNotified) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
-        this.isseen = isseen;
+        this.isSeen = isSeen;
         this.isNotified = isNotified;
     }
 
@@ -43,12 +43,12 @@ public class MyChat {
         this.message = message;
     }
 
-    public boolean isIsseen() {
-        return isseen;
+    public boolean isSeen() {
+        return isSeen;
     }
 
-    public void setIsseen(boolean isseen) {
-        this.isseen = isseen;
+    public void setSeen(boolean seen) {
+        this.isSeen = seen;
     }
 
     public boolean isNotified() {

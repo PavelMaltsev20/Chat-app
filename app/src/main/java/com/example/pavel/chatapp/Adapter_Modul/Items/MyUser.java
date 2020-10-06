@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Adapter_Modul;
+package com.example.pavel.chatapp.Adapter_Modul.Items;
 
 public class MyUser {
 

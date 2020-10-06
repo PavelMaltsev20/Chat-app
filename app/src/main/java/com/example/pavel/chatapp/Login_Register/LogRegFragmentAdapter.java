@@ -7,13 +7,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 
-public class LoginRegisterFragmentAdapter extends FragmentPagerAdapter {
+public class LogRegFragmentAdapter extends FragmentPagerAdapter {
 
     Context context;
     ArrayList<Fragment> fragments;
     ArrayList<String> titles;
 
-    public LoginRegisterFragmentAdapter(FragmentManager fm, Context context) {
+    public LogRegFragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context=context;
         this.fragments=new ArrayList<>();

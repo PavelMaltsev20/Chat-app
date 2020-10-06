@@ -7,13 +7,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import java.util.List;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.RecyclerView;
 
 
@@ -38,11 +37,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType==MSG_TYPE_RIGHT) {
-            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_right, parent, false);
+            View view = LayoutInflater.from(context).inflate(R.layout.item_chat_side_right, parent, false);
             return new MessageAdapter.ViewHolder(view);
 
         }else{
-            View view = LayoutInflater.from(context).inflate(R.layout.chat_item_left, parent, false);
+            View view = LayoutInflater.from(context).inflate(R.layout.item_chat_side_left, parent, false);
             return new MessageAdapter.ViewHolder(view);
         }
     }
@@ -61,7 +60,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
 
         if (position == myChatList.size()-1){
-            if(chat.isIsseen()){
+            if(chat.isSeen()){
                 holder.txt_seen.setText("Seen");
             }else{
                 holder.txt_seen.setText("Delivered");

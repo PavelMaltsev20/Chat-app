@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name" id="@+id/chatName">ChatApp</string>
-    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
     <string name="usersFragTtl">All users</string>
     <string name="password_updater_title">Enter email for change password</string>
     <string name="confirm">Confirm</string>
@@ -8,8 +7,32 @@
     <string name="name_updater_title">Enter your name</string>
     <string name="email_updater_title">Enter your email</string>
     <string name="title_activity_chat_with_user">ChatWithUserActivity</string>
-    <string name="settingsMessageAboutBug">kocmo7@mail.ru it\'s my
-        email, if you find bug or you have idea about improving
-        app give me know </string>
+    <string name="settingsMessageAboutBug">salary.app.service@gmail.com it\'s business account for improving app. Please send to us if you found bug or you have idea for improving app. </string>
+
+
     <string name="settingsChooseTheme">Blue theme</string>
+    <string name="frag_login_title">Authorization</string>
+    <string name="frag_login_enter_email">Enter your email</string>
+    <string name="frag_login_enter_password">Enter your password</string>
+    <string name="frag_login_reset_password">Reset password</string>
+    <string name="frag_login_swipe_right_for_register">Swipe right for register</string>
+    <string name="frag_login_btn_cancel">Cancel</string>
+    <string name="frag_login_btn_confirm">Confirm</string>
+    <string name="frag_reg_title">Register</string>
+    <string name="frag_reg_enter_name">Enter your name</string>
+    <string name="frag_reg_enter_email">Enter your email</string>
+    <string name="frag_reg_enter_password">Enter your password</string>
+    <string name="frag_reg_confirm_password">Confirm your password</string>
+    <string name="frag_reg_btn_cancel">Cancel</string>
+    <string name="frag_reg_btn_confirm">Confirm</string>
+
+
+
+    <!--Toasts-->
+    <string name="toast_reg_email_exist">Current email already exist</string>
+    <string name="toast_reg_not_same_passwords">Passwords should be same</string>
+    <string name="toast_reg_empty_field">One of fields is empty</string>
+    <string name="toast_reg_welcome_to_chat">\" welcome to chat\"</string>
+    <string name="toast_reg_user_exist">User with current email exist in database</string>
+    <string name="toast_login_required_fields">Fields are required</string>
 </resources>

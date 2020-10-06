@@ -18,8 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.MessageAdapter;
-import com.example.pavel.chatapp.Adapter_Modul.MyChat;
-import com.example.pavel.chatapp.Adapter_Modul.MyUser;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;

@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Chat.ChatWithUserActivity;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +43,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.user_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_user, parent, false);
         return new UserAdapter.ViewHolder(view);
     }
 

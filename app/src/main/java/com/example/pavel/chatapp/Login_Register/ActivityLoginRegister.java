@@ -2,7 +2,6 @@ package com.example.pavel.chatapp.Login_Register;
 
 import android.content.Context;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,7 +13,7 @@ import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginRegisterActivity extends AppCompatActivity {
+public class ActivityLoginRegister extends AppCompatActivity {
 
     Context context;
 
@@ -38,10 +37,10 @@ public class LoginRegisterActivity extends AppCompatActivity {
 
 
         ViewPager viewPager = findViewById(R.id.viewPagerLoginRegister);
-        LoginRegisterFragmentAdapter viewPagerAdapter = new LoginRegisterFragmentAdapter(getSupportFragmentManager(), context);
+        LogRegFragmentAdapter viewPagerAdapter = new LogRegFragmentAdapter(getSupportFragmentManager(), context);
 
-        viewPagerAdapter.addFragment(new LoginFragment(), "Login");
-        viewPagerAdapter.addFragment(new RegisterFragment(), "Register");
+        viewPagerAdapter.addFragment(new FragLogin(), "Login");
+        viewPagerAdapter.addFragment(new FragRegister(context), "Register");
 
         viewPager.setAdapter(viewPagerAdapter);
 

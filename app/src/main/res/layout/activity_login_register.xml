@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login_Register.LoginRegisterActivity"
-    android:background="@drawable/space"
+    tools:context=".Login_Register.ActivityLoginRegister"
+    android:background="@drawable/main_background"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
     <androidx.viewpager.widget.ViewPager

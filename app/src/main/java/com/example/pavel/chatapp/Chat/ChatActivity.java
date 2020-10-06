@@ -13,9 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 import com.example.pavel.chatapp.Adapter_Modul.ChatFragmentAdapter;
-import com.example.pavel.chatapp.Adapter_Modul.MyUser;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.Login_Register.LoginRegisterActivity;
+import com.example.pavel.chatapp.Login_Register.ActivityLoginRegister;
 import com.example.pavel.chatapp.ProfileActivity;
 import com.example.pavel.chatapp.R;
 import com.example.pavel.chatapp.Services.MyServiceBinder;
@@ -130,7 +130,7 @@ public class ChatActivity extends AppCompatActivity {
                 return true;
             case R.id.menuLogout:
                 mAuth.signOut();
-                Intent intent1 = new Intent(ChatActivity.this, LoginRegisterActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent1 = new Intent(ChatActivity.this, ActivityLoginRegister.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent1);
                 return true;
         }

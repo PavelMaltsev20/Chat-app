@@ -1,7 +1,5 @@
 package com.example.pavel.chatapp.Chat;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.example.pavel.chatapp.Adapter_Modul.MyUser;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.UserAdapter;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;

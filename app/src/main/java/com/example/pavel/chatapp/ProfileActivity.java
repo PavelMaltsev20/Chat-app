@@ -3,7 +3,6 @@ package com.example.pavel.chatapp;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -22,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.pavel.chatapp.Adapter_Modul.MyUser;
+import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -228,7 +227,7 @@ ProfileActivity extends AppCompatActivity {
     //Method of email update
     private void updateEmail(final TextView emailTV) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.email_updater_alert_dialog, null, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_email_updater, null, false);
         final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
 
         final EditText email = view.findViewById(R.id.emailUpET);
@@ -282,7 +281,7 @@ ProfileActivity extends AppCompatActivity {
     //Method of username update
     private void updateUserName(final MyUser myUser) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.name_updater_alert_dialog, null, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_name_updater, null, false);
         final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
 
         final EditText username = view.findViewById(R.id.nameUpET);
@@ -339,7 +338,7 @@ ProfileActivity extends AppCompatActivity {
     //Method of password update
     public void updatePassword(final Context context, final FirebaseUser firebaseUser, final FirebaseAuth mAuth) {
 
-        View view = LayoutInflater.from(context).inflate(R.layout.password_updater_alert_dialog, null, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_password_updater, null, false);
         final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
 
         final EditText email = view.findViewById(R.id.passUpETEmail);

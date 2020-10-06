@@ -13,14 +13,14 @@
        android:text="Last chats"
        android:textAlignment="center"
        android:textSize="@dimen/ttlTextSize"
-       android:layout_margin="@dimen/marginOfElements"/>
+       android:layout_margin="@dimen/standard_margin"/>
 
    <androidx.recyclerview.widget.RecyclerView
        android:id="@+id/conversationRV"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
        android:layout_below="@+id/conversationTtl"
-       android:layout_margin="@dimen/marginOfElements"
+       android:layout_margin="@dimen/standard_margin"
        />
 
 </RelativeLayout>
