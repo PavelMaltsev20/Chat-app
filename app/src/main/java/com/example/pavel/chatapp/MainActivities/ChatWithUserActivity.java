@@ -1,9 +1,10 @@
-package com.example.pavel.chatapp.Chat;
+package com.example.pavel.chatapp.MainActivities;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.MessageAdapter;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
+import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,27 +39,24 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatWithUserActivity extends Activity {
 
-    CircleImageView profile_image;
-    TextView username;
-    Context context;
+    private CircleImageView profile_image;
+    private TextView username;
+    private Context context;
 
-    FirebaseUser firebaseUser;
-    DatabaseReference databaseReference;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference databaseReference;
 
-    Intent intent;
+    private Intent intent;
 
-    FloatingActionButton sendBtn;
-    EditText messageET;
+    private FloatingActionButton sendBtn;
+    private EditText messageET;
 
-    RecyclerView recyclerView;
-    MessageAdapter messageAdapter;
-    List<MyChat> myChatList;
+    private RecyclerView recyclerView;
+    private MessageAdapter messageAdapter;
+    private List<Message> messageList;
 
-    ValueEventListener seenListener;
-    String userId;
-
-
-
+    private ValueEventListener seenListener;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +81,8 @@ public class ChatWithUserActivity extends Activity {
 
         recyclerView = findViewById(R.id.chatWithUserRecyclerView);
 
-        myChatList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(context, myChatList, "");
+        messageList = new ArrayList<>();
+        messageAdapter = new MessageAdapter(context, messageList, "");
         recyclerView.setAdapter(messageAdapter);
         recyclerView.setLayoutManager(linearLayoutManager);
 
@@ -118,9 +116,10 @@ public class ChatWithUserActivity extends Activity {
 
                 MyUser myUser = dataSnapshot.getValue(MyUser.class);
                 username.setText(myUser.getUsername());
+                username.setTextColor(Color.WHITE);
 
                 if (myUser.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                    profile_image.setImageResource(R.drawable.ic_user_profile);
                 } else {
                     Glide.with(getBaseContext()).load(myUser.getImageURL()).into(profile_image);
                 }
@@ -187,15 +186,15 @@ public class ChatWithUserActivity extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                myChatList.clear();
+                messageList.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    MyChat chat = snapshot.getValue(MyChat.class);
+                    Message chat = snapshot.getValue(Message.class);
 
                     if (chat.getReceiver().equals(myId) && chat.getSender().equals(userId)
                             || chat.getReceiver().equals(userId) && chat.getSender().equals(myId)) {
-                        myChatList.add(chat);
+                        messageList.add(chat);
 
                     }
 
@@ -247,7 +246,7 @@ public class ChatWithUserActivity extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    MyChat chat = snapshot.getValue(MyChat.class);
+                    Message chat = snapshot.getValue(Message.class);
 
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)) {
                         HashMap<String, Object> hashMap = new HashMap<>();

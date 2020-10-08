@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login_Register.ActivityLoginRegister"
+    tools:context=".MainActivities.Login_Register.ActivityLoginRegisterContainer"
     android:background="@drawable/main_background"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 

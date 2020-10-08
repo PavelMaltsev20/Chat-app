@@ -1,6 +1,6 @@
 package com.example.pavel.chatapp.Adapter_Modul.Items;
 
-public class MyChat {
+public class Message {
 
     private String sender;
     private String receiver;
@@ -8,15 +8,15 @@ public class MyChat {
     private boolean isSeen;
     private boolean isNotified;
 
-    public MyChat(String sender, String receiver, String message, boolean isSeen, boolean isNotified) {
+    public Message() {
+    }
+
+    public Message(String sender, String receiver, String message, boolean isSeen, boolean isNotified) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.isSeen = isSeen;
         this.isNotified = isNotified;
-    }
-
-    public MyChat() {
     }
 
     public String getSender() {

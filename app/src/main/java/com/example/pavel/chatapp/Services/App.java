@@ -7,7 +7,6 @@ import android.os.IBinder;
 
 public class App extends   Application{
 
-
     NotificationService myNotificationService;
 
     @Override

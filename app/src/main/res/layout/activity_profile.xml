@@ -1,114 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProfileActivity"
-    android:background="@drawable/main_background">
+    android:background="@drawable/main_background"
+    tools:context=".MainActivities.ProfileActivity">
 
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profileIV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/profile_IV"
+        android:layout_width="100dp"
+        android:layout_height="150dp"
         android:layout_centerHorizontal="true"
         android:layout_margin="@dimen/standard_margin"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/ic_user_profile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/profileFirstLayout"
-        android:layout_width="match_parent"
+
+    <TextView
+        android:id="@+id/profile_TV_helperEmail"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profileIV">
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_weight="1"
+        android:text="@string/profile_tv_email"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_IV" />
 
-
-        <TextView
-            android:id="@+id/profileTVEmail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_weight="1"
-            android:text="Email"
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
-
-        <TextView
-            android:id="@+id/profileTVEmail2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profileIV"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_toRightOf="@+id/profileTVEmail"
-            android:layout_weight="2"
-            android:text="Email"
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/profileSecondLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/profile_TV_email"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profileFirstLayout"
-        >
+        android:layout_below="@+id/profile_IV"
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_toRightOf="@+id/profile_TV_helperEmail"
+        android:layout_weight="2"
+        android:text="@string/profile_tv_email"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toEndOf="@+id/profile_TV_helperPass"
+        app:layout_constraintTop_toBottomOf="@+id/profile_IV" />
 
-        <TextView
-            android:id="@+id/profileTVName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profileTVEmail"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_weight="1"
-            android:text="Name "
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
-
-        <TextView
-            android:id="@+id/profileTVName2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profileTVEmail"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_toRightOf="@+id/profileTVName"
-            android:layout_weight="2"
-            android:text="Name "
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/profileThirdLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/profile_TV_helperName"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profileSecondLayout">
+        android:layout_below="@+id/profile_TV_helperEmail"
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_weight="1"
+        android:text="@string/profile_tv_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_TV_helperEmail" />
 
-        <TextView
-            android:id="@+id/profileTVPassword"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profileTVName"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_weight="1"
-            android:text="Password"
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/profile_TV_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_TV_helperEmail"
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_toRightOf="@+id/profile_TV_helperName"
+        android:layout_weight="2"
+        android:text="@string/profile_tv_name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toEndOf="@+id/profile_TV_helperPass"
+        app:layout_constraintTop_toBottomOf="@+id/profile_TV_email" />
 
-        <TextView
-            android:id="@+id/profileTVPassword2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/profileTVName"
-            android:layout_margin="@dimen/standard_margin"
-            android:layout_toRightOf="@+id/profileTVPassword"
-            android:layout_weight="2"
-            android:text="Click here to change"
-            android:textSize="@dimen/textSizeOfProfileElements"
-            android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/profile_TV_helperPass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_TV_helperName"
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_weight="1"
+        android:text="@string/profile_tv_pass"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_TV_helperName" />
 
-    </LinearLayout>
+    <TextView
+        android:id="@+id/profile_TV_pass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/profile_TV_helperName"
+        android:layout_margin="@dimen/standard_margin"
+        android:layout_toRightOf="@+id/profile_TV_helperPass"
+        android:layout_weight="2"
+        android:text="@string/profile_change_pass"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfProfileElements"
+        app:layout_constraintStart_toEndOf="@+id/profile_TV_helperPass"
+        app:layout_constraintTop_toBottomOf="@+id/profile_TV_name" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/profile_hint_change_data_above"
+        android:textColor="@color/white_hint_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profile_TV_pass" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

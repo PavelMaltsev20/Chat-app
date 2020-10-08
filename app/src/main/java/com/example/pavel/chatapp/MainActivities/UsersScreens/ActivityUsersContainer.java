@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Chat;
+package com.example.pavel.chatapp.MainActivities.UsersScreens;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -6,21 +6,25 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-import com.example.pavel.chatapp.Adapter_Modul.ChatFragmentAdapter;
+
+import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.Login_Register.ActivityLoginRegister;
-import com.example.pavel.chatapp.ProfileActivity;
+import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
+import com.example.pavel.chatapp.MainActivities.ProfileActivity;
 import com.example.pavel.chatapp.R;
 import com.example.pavel.chatapp.Services.MyServiceBinder;
 import com.example.pavel.chatapp.Services.NotificationService;
-import com.example.pavel.chatapp.SettingsActivity;
+import com.example.pavel.chatapp.MainActivities.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,14 +33,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ChatActivity extends AppCompatActivity {
+public class ActivityUsersContainer extends AppCompatActivity {
 
-    Context context;
-
-    FirebaseAuth mAuth;
-    FirebaseUser firebaseUser;
-    DatabaseReference databaseReference;
-    SharedPref sharedPref;
+    private final String TAG = "ActivityUsersContainer";
+    private DatabaseReference databaseReference;
+    private FirebaseUser firebaseUser;
+    private SharedPref sharedPref;
+    private FirebaseAuth mAuth;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +48,8 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fragmentCreating();
-
-        setPointer();
+        initializeObjects();
     }
-
 
     private void updateNewTheme() {
         sharedPref = new SharedPref(this);
@@ -58,26 +60,34 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-    private void setPointer() {
+    private void initializeObjects() {
         context = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
+        initializeReference();
+        initializeServiceIntent();
+        setTitleWithUserName();
+    }
+
+    private void initializeReference() {
         if (firebaseUser.getUid() != null) {
             databaseReference = FirebaseDatabase.getInstance()
                     .getReference("Users")
                     .child(firebaseUser.getUid());
         }
+    }
 
+    private void initializeServiceIntent() {
         serviceIntent = new Intent(context, NotificationService.class);
+    }
 
+    private void setTitleWithUserName() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 MyUser myUser = dataSnapshot.getValue(MyUser.class);
-
                 if (myUser != null) {
-                    getSupportActionBar().setTitle(myUser.getUsername());
+                    getSupportActionBar().setTitle(getUserName(myUser));
                 }
             }
 
@@ -85,33 +95,29 @@ public class ChatActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+    }
 
+    private String getUserName(MyUser myUser) {
+        String name = myUser.getUsername();
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        return name;
     }
 
     //Part of creating chat fragments
     private void fragmentCreating() {
-
         final ViewPager viewPager = findViewById(R.id.viewPagerChat);
-
         databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ChatFragmentAdapter chatFragmentAdapter = new ChatFragmentAdapter(getSupportFragmentManager());
-
-                chatFragmentAdapter.addFragment(new LastChatsFragment(), "Last Chats");
-                chatFragmentAdapter.addFragment(new AllUsersFragment(), "Users");
-
-                viewPager.setAdapter(chatFragmentAdapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        viewPager.setAdapter(getUsersAdapter());
     }
 
-    //Part of creating menu
+    private PagerAdapter getUsersAdapter() {
+        UsersAdapter usersAdapter = new UsersAdapter(getSupportFragmentManager());
+        usersAdapter.addFragment(new FragLastChats(), "Last Chats");
+        usersAdapter.addFragment(new FragSearchUsers(), "Users");
+        return usersAdapter;
+    }
+
+    //----------------------------Menu part ----------------------------------------
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -123,14 +129,14 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch ((item.getItemId())) {
             case R.id.menuProfile:
-                startActivity(new Intent(ChatActivity.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsersContainer.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuSettings:
-                startActivity(new Intent(ChatActivity.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsersContainer.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuLogout:
                 mAuth.signOut();
-                Intent intent1 = new Intent(ChatActivity.this, ActivityLoginRegister.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent1 = new Intent(ActivityUsersContainer.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent1);
                 return true;
         }
@@ -146,27 +152,28 @@ public class ChatActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //For notification
-    Intent serviceIntent;
-    NotificationService myNotificationService;
+    //----------------------------NotificationService part ----------------------------------------
+    private Intent serviceIntent;
+    private NotificationService myNotificationService;
 
     @Override
     protected void onResume() {
         super.onResume();
-
         try {
             context.unbindService(serviceConnection);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        try {
+            context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        } catch (Exception e) {
+            Log.e(TAG, "bind service Exception: ", e);
+        }
     }
 
     @Override
@@ -188,8 +195,6 @@ public class ChatActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
         }
     };
-
-
 
 }
 

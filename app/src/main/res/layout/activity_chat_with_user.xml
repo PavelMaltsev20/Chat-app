@@ -8,11 +8,17 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/bar_layout"
+        layout="@layout/toolbar_layout"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_margin="10dp"/>
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center" />
 
 
     <androidx.recyclerview.widget.RecyclerView

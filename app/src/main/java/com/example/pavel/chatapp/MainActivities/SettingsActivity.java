@@ -1,32 +1,23 @@
-package com.example.pavel.chatapp;
+package com.example.pavel.chatapp.MainActivities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.Chat.ChatActivity;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    Switch mySwitch;
-    Context context;
-    SharedPref sharedPreferences;
-
+    private Switch mySwitch;
+    private SharedPref sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    private void setupSwitch(){
+    private void setupSwitch() {
         mySwitch = findViewById(R.id.settingsSwitch);
 
         if (sharedPreferences.loadNightModeState() == true) {
@@ -67,30 +58,18 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void reloadActivity() {
-        Intent intent = new Intent(this,SettingsActivity.class);
+        Intent intent = new Intent(this, SettingsActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
     }
 
-    private void sendingMessage() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage("I glad you to helping me to improve my app, thank you")
-                .setPositiveButton("close", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-        builder.show();
-    }
-
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, ChatActivity.class);
-        if(sharedPreferences.loadNightModeState() == true)
-        intent.putExtra("first_theme", true);
+        Intent intent = new Intent(this, ActivityUsersContainer.class);
+        if (sharedPreferences.loadNightModeState() == true)
+            intent.putExtra("first_theme", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

@@ -1,61 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:layout_margin="@dimen/standard_margin"
+    android:background="@drawable/item_user_theme_green"
+    android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/userItemImage"
+        android:id="@+id/userItem_IV_profileImage"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@mipmap/ic_launcher"/>
-    
+        android:layout_margin="@dimen/standard_margin"
+        android:src="@mipmap/ic_launcher" />
+
     <TextView
-        android:id="@+id/userItemTVUserName"
+        android:id="@+id/userItem_TV_userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/userItemImage"
-        android:layout_toEndOf="@+id/userItemImage"
-        android:text="username"
-        android:layout_margin="15dp"
         android:layout_centerVertical="true"
-        android:textSize="15sp"/>
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_toEndOf="@+id/userItem_IV_profileImage"
+        android:layout_toRightOf="@+id/userItem_IV_profileImage"
+        android:text="username"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_on"
+        android:id="@+id/userItem_IV_img_on"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        app:civ_border_width="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@mipmap/ic_launcher"
+        android:visibility="gone"
         app:civ_border_color="@color/onlineStatus"
-        android:visibility="gone"
-        android:src="@mipmap/ic_launcher"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        app:civ_border_width="10dp" />
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userItem_IV_img_off"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        app:civ_border_width="10dp"
-        app:civ_border_color="@color/offlineStatus"
-        android:id="@+id/img_off"
-        android:visibility="gone"
-        android:src="@mipmap/ic_launcher"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true" />
+        android:src="@mipmap/ic_launcher"
+        android:visibility="gone"
+        app:civ_border_color="@color/offlineStatus"
+        app:civ_border_width="10dp" />
 
     <TextView
+        android:id="@+id/userItem_TV_last_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/userItemTVUserName"
-        android:layout_toRightOf="@id/userItemImage"
+        android:layout_below="@id/userItem_TV_userName"
+        android:layout_marginLeft="@dimen/standard_margin"
         android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/userItem_IV_profileImage"
+        android:maxLines="1"
         android:paddingTop="5dp"
-        android:id="@+id/last_msg"
-        android:textColor="@color/lastMessage"
-        android:layout_marginLeft="20dp"
-        android:maxLines="1" />
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/white" />
 
 
 </RelativeLayout>

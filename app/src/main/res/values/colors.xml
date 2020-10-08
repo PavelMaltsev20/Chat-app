@@ -10,4 +10,5 @@
     <color name="onlineStatus">#45FF00</color>
     <color name="offlineStatus">#949494</color>
     <color name="lastMessage">#3F3F3F</color>
+    <color name="white_hint_color">#7BFFFFFF</color>
 </resources>

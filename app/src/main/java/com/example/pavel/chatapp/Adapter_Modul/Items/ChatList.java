@@ -1,13 +1,13 @@
-package com.example.pavel.chatapp.Chat;
+package com.example.pavel.chatapp.Adapter_Modul.Items;
 
 public class ChatList {
     public String id;
 
-    public ChatList(String id) {
-        this.id = id;
+    public ChatList() {
     }
 
-    public ChatList() {
+    public ChatList(String id) {
+        this.id = id;
     }
 
     public String getId() {

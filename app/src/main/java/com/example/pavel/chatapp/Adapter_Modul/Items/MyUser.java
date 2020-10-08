@@ -8,15 +8,15 @@ public class MyUser {
     private String status;
     private String search;
 
+    public MyUser() {
+    }
+
     public MyUser(String id, String username, String imageURL, String status, String search) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
         this.status = status;
         this.search = search;
-    }
-
-    public MyUser() {
     }
 
     public String getId() {

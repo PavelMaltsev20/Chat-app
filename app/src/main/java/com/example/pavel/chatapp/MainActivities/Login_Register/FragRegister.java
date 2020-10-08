@@ -1,19 +1,23 @@
-package com.example.pavel.chatapp.Login_Register;
+package com.example.pavel.chatapp.MainActivities.Login_Register;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Chat.ChatActivity;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 import java.util.HashMap;
 
 //TODO make toasts for register method, notify user what happen in current time
@@ -35,12 +40,13 @@ public class FragRegister extends Fragment {
     private Boolean currentUserExist;
     private Button confirm, cancel;
     private Context context;
+    private ProgressBar progressBar;
 
     private DatabaseReference databaseReference;
     private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
 
-    public FragRegister(Context context){
+    public FragRegister(Context context) {
         this.context = context;
     }
 
@@ -48,19 +54,19 @@ public class FragRegister extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_register, null, false);
-        setObjectsReferences(view);
+        initializeObjects(view);
         initializeListeners();
         return view;
     }
 
-    private void setObjectsReferences(View view) {
+    private void initializeObjects(View view) {
         mAuth = FirebaseAuth.getInstance();
 
         username_et = view.findViewById(R.id.regETUsername);
         mail_et = view.findViewById(R.id.regETEmail);
         pass1_et = view.findViewById(R.id.regETPass);
         pass2_et = view.findViewById(R.id.regETPass2);
-
+        progressBar = view.findViewById(R.id.fragReg_PB);
         confirm = view.findViewById(R.id.regBtnConfirm);
         cancel = view.findViewById(R.id.regBtnCancel);
     }
@@ -69,6 +75,7 @@ public class FragRegister extends Fragment {
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 registerNewUser();
             }
         });
@@ -84,6 +91,8 @@ public class FragRegister extends Fragment {
     private void registerNewUser() {
         if (checkCorrectInput()) {
             addUserToFirebaseAuth(mail_et.getText().toString(), pass1_et.getText().toString());
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -150,7 +159,7 @@ public class FragRegister extends Fragment {
                                             public void onComplete(@NonNull Task<Void> task) {
                                                 if (task.isSuccessful()) {
 
-                                                    Intent intent = new Intent(context, ChatActivity.class);
+                                                    Intent intent = new Intent(context, ActivityUsersContainer.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                                     startActivity(intent);
                                                     Toast.makeText(context, username_et.getText().toString() + getString(R.string.toast_reg_welcome_to_chat), Toast.LENGTH_SHORT).show();
@@ -165,11 +174,12 @@ public class FragRegister extends Fragment {
                     Toast.makeText(context, R.string.toast_reg_user_exist, Toast.LENGTH_SHORT).show();
                     currentUserExist = true;
                 }
+                progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
 

@@ -10,9 +10,9 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
+import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Chat.ChatWithUserActivity;
+import com.example.pavel.chatapp.MainActivities.ChatWithUserActivity;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,15 +23,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.nio.file.attribute.AclEntry;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
 public class NotificationService extends Service {
 
     private boolean isDelivered = false;
+    private FirebaseUser firebaseUser;
 
     public NotificationService() {
     }
@@ -41,9 +44,8 @@ public class NotificationService extends Service {
     public IBinder onBind(Intent intent) {
         MyServiceBinder binder = new MyServiceBinder();
         binder.service = this;
-
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         notificationListener();
-
         return binder;
     }
 
@@ -54,7 +56,6 @@ public class NotificationService extends Service {
 
     private void notificationListener() {
 
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
 
             final DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("Chats");
@@ -66,13 +67,13 @@ public class NotificationService extends Service {
 
 
                     try {
-                        MyChat chat = dataSnapshot.getValue(MyChat.class);
+                        Message chat = dataSnapshot.getValue(Message.class);
                         if (chat.getReceiver().equals(currentUserId) && dataSnapshot.child("isNotified").getValue().toString().equals("false")) {
                             HashMap<String, Object> hashMap = new HashMap<>();
                             hashMap.put("isNotified", true);
                             dataSnapshot.getRef().updateChildren(hashMap);
                             chat.setNotified(true);
-                            lookingForUserData(chat);
+                            waitingForUserData(chat);
                         }
                     } catch (Exception e) {
                     }
@@ -98,7 +99,7 @@ public class NotificationService extends Service {
     }
 
     //Chat get  message of user and service start work in other activities
-    private void lookingForUserData(final MyChat chat) {
+    private void waitingForUserData(final Message chat) {
 
         final DatabaseReference firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         firebaseDatabase.child(chat.getSender()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -106,6 +107,7 @@ public class NotificationService extends Service {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 final MyUser userSender = dataSnapshot.getValue(MyUser.class);
                 firebaseDatabase.child(chat.getReceiver()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.O)
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         MyUser userReceiver = dataSnapshot.getValue(MyUser.class);
@@ -124,8 +126,8 @@ public class NotificationService extends Service {
         });
     }
 
-
     //Notification method
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationWithAction(int nId, MyUser myCurrentUser, MyUser secondUser, String body) {
 
         final String NOTIFICATION_CHANNEL_ID = myCurrentUser.getId();
@@ -134,35 +136,49 @@ public class NotificationService extends Service {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "Chat app", NotificationManager.IMPORTANCE_HIGH);
-
-            notificationChannel.setDescription("sending notifications");
-            notificationChannel.enableLights(true);
-            notificationChannel.setLightColor(Color.BLUE);
-            notificationChannel.enableVibration(true);
-            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
-
-            notificationManager.createNotificationChannel(notificationChannel);
+            notificationManager.createNotificationChannel(addDataToNotificationChannel(notificationChannel));
         }
 
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, initRequestId(), initIntent(secondUser), initFlag());
 
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+        notificationBuilder = initNotificationBuilder(notificationBuilder, secondUser, body, pendingIntent);
+        notificationManager.notify(nId, notificationBuilder.build());
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private NotificationChannel addDataToNotificationChannel(NotificationChannel notificationChannel) {
+        notificationChannel.setDescription("sending notifications");
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.BLUE);
+        notificationChannel.enableVibration(true);
+        notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+        return null;
+    }
+
+    private Intent initIntent(MyUser secondUser) {
         Intent intent = new Intent(getApplicationContext(), ChatWithUserActivity.class);
         intent.putExtra("userId", secondUser.getId());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
 
-        int requestId = (int) System.currentTimeMillis() / 1000;
-        int flag = PendingIntent.FLAG_CANCEL_CURRENT;
+    private int initRequestId() {
+        return (int) System.currentTimeMillis() / 1000;
+    }
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, requestId, intent, flag);
+    private int initFlag() {
+        return PendingIntent.FLAG_CANCEL_CURRENT;
+    }
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle(secondUser.getUsername())
+    private NotificationCompat.Builder initNotificationBuilder(NotificationCompat.Builder notificationBuilder, MyUser secondUser, String body, PendingIntent pendingIntent) {
+        notificationBuilder.setContentTitle(secondUser.getUsername())
                 .setContentText(body)
                 .setSmallIcon(R.drawable.message_small_icon)
                 .setTicker("New message")
                 .setContentIntent(pendingIntent)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true);
-
-        notificationManager.notify(nId, notificationBuilder.build());
+        return notificationBuilder;
     }
 }

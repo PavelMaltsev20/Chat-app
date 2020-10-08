@@ -7,7 +7,7 @@
     <string name="name_updater_title">Enter your name</string>
     <string name="email_updater_title">Enter your email</string>
     <string name="title_activity_chat_with_user">ChatWithUserActivity</string>
-    <string name="settingsMessageAboutBug">salary.app.service@gmail.com it\'s business account for improving app. Please send to us if you found bug or you have idea for improving app. </string>
+    <string name="settingsMessageAboutBug">salary.app.service@gmail.com:\n Business  email.\nYou can send report about bugs or ideas for improve app. Thank. </string>
 
 
     <string name="settingsChooseTheme">Blue theme</string>
@@ -27,7 +27,6 @@
     <string name="frag_reg_btn_confirm">Confirm</string>
 
 
-
     <!--Toasts-->
     <string name="toast_reg_email_exist">Current email already exist</string>
     <string name="toast_reg_not_same_passwords">Passwords should be same</string>
@@ -35,4 +34,10 @@
     <string name="toast_reg_welcome_to_chat">\" welcome to chat\"</string>
     <string name="toast_reg_user_exist">User with current email exist in database</string>
     <string name="toast_login_required_fields">Fields are required</string>
+    <string name="shared_pref_night_mode">NightMode</string>
+    <string name="profile_hint_change_data_above">Click on text above for change it.</string>
+    <string name="profile_tv_email">Email</string>
+    <string name="profile_tv_name">Name</string>
+    <string name="profile_tv_pass">Password</string>
+    <string name="profile_change_pass">Click here to change</string>
 </resources>

@@ -9,9 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyChat;
+import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Chat.ChatWithUserActivity;
+import com.example.pavel.chatapp.MainActivities.ChatWithUserActivity;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,27 +24,41 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
-    private Context context;
-    private String theLastMessage;
-    private boolean isChat;
     private List<MyUser> myUserList;
+    private String lastMessage;
+    private Context context;
+    private boolean isChat;
+
+    private void setTheme() {
+
+    }
 
     public UserAdapter(Context context, List<MyUser> myUserList, boolean isChat) {
         this.context = context;
         this.isChat = isChat;
         this.myUserList = myUserList;
-
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_user, parent, false);
-        return new UserAdapter.ViewHolder(view);
+        setBackgroundUserTheme(view);
+        return new ViewHolder(view);
+    }
+
+    private void setBackgroundUserTheme(View view) {
+        SharedPref sharedPref = new SharedPref(context);
+        if (sharedPref.loadNightModeState() == true) {
+            view.setBackground(AppCompatResources.getDrawable(context, R.drawable.item_user_theme_blue));
+        } else {
+            view.setBackground(AppCompatResources.getDrawable(context, R.drawable.item_user_theme_green));
+        }
     }
 
 
@@ -53,10 +67,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         final MyUser myUser = myUserList.get(position);
         myUser.setId(myUserList.get(position).getId());
-        holder.username.setText(myUser.getUsername());
+        holder.username_tv.setText(myUser.getUsername());
 
         if (myUser.getImageURL().equals("default")) {
-            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
+            holder.profile_image.setImageResource(R.drawable.ic_user_profile);
         } else {
             Glide.with(context).load(myUser.getImageURL()).into(holder.profile_image);
         }
@@ -64,9 +78,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         //Display last message if user not seen it yet
         if (isChat) {
-            lastMessage(myUser.getId(), holder.last_message);
+            lastMessage(myUser.getId(), holder.lastMessage_tv);
         } else {
-            holder.last_message.setVisibility(View.GONE);
+            holder.lastMessage_tv.setVisibility(View.GONE);
         }
 
 
@@ -96,7 +110,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
 
     private void lastMessage(final String userid, final TextView last_msg) {
-        theLastMessage = "default";
+        lastMessage = "default";
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
 
@@ -105,23 +119,23 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    MyChat chat = snapshot.getValue(MyChat.class);
+                    Message chat = snapshot.getValue(Message.class);
                     if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
                             chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                        theLastMessage = chat.getMessage();
+                        lastMessage = chat.getMessage();
                     }
                 }
 
-                switch (theLastMessage) {
+                switch (lastMessage) {
                     case "default":
                         last_msg.setText("No message");
                         break;
 
                     default:
-                        last_msg.setText(theLastMessage);
+                        last_msg.setText(lastMessage);
                         break;
                 }
-                theLastMessage = "default";
+                lastMessage = "default";
             }
 
             @Override
@@ -135,24 +149,19 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         return myUserList.size();
     }
 
-
-    //Holder of user item
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView username;
-        private ImageView profile_image;
-        private ImageView img_on;
-        private ImageView img_off;
-        private TextView last_message;
+        private TextView username_tv, lastMessage_tv;
+        private ImageView profile_image, img_on, img_off;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            username = itemView.findViewById(R.id.userItemTVUserName);
-            last_message = itemView.findViewById(R.id.last_msg);
-            profile_image = itemView.findViewById(R.id.userItemImage);
+            username_tv = itemView.findViewById(R.id.userItem_TV_userName);
+            lastMessage_tv = itemView.findViewById(R.id.userItem_TV_last_msg);
+            profile_image = itemView.findViewById(R.id.userItem_IV_profileImage);
 
-            img_on = itemView.findViewById(R.id.img_on);
-            img_off = itemView.findViewById(R.id.img_off);
+            img_on = itemView.findViewById(R.id.userItem_IV_img_on);
+            img_off = itemView.findViewById(R.id.userItem_IV_img_off);
 
         }
     }

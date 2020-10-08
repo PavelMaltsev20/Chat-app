@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp;
+package com.example.pavel.chatapp.MainActivities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
+import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,88 +47,92 @@ import java.util.HashMap;
 public class
 ProfileActivity extends AppCompatActivity {
 
-    CircleImageView circleImageView;
-    TextView email, username, password;
-    Context context;
+    private CircleImageView circleImageView;
+    private TextView email, username, password;
+    private Context context;
 
-    FirebaseAuth mAuth;
-    FirebaseUser firebaseUser;
-    DatabaseReference databaseReference;
+    private FirebaseAuth mAuth;
+    private FirebaseUser firebaseUser;
+    private DatabaseReference databaseReference;
 
-    StorageReference storageReference;
+    private StorageReference storageReference;
     private static final int IMAGE_REQUEST = 1;
     private Uri imageUri;
     private StorageTask uploadTask;
-    SharedPref sharedPref;
+    private SharedPref sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        updateNewTheme();
+        setTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        setPointer();
+        initializeObjects();
+        setListeners();
+        getUserDataFromFirebase();
     }
 
-    private void updateNewTheme() {
+    private void setTheme() {
         sharedPref = new SharedPref(this);
-        if (sharedPref.loadNightModeState()==true) {
+        if (sharedPref.loadNightModeState() == true) {
             setTheme(R.style.AppTheme2);
         } else {
             setTheme(R.style.AppTheme);
         }
     }
 
-    private void setPointer() {
+    private void initializeObjects() {
         context = this;
 
-        circleImageView = findViewById(R.id.profileIV);
-        email = findViewById(R.id.profileTVEmail2);
-        username = findViewById(R.id.profileTVName2);
-        password = findViewById(R.id.profileTVPassword2);
+        circleImageView = findViewById(R.id.profile_IV);
+        email = findViewById(R.id.profile_TV_email);
+        username = findViewById(R.id.profile_TV_name);
+        password = findViewById(R.id.profile_TV_pass);
 
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-
         storageReference = FirebaseStorage.getInstance().getReference("uploads");
+    }
 
+    private void setListeners() {
+        circleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGalleryOnDevice();
+            }
+        });
+
+        email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateEmail(email);
+            }
+        });
+
+        username.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateUserName();
+            }
+        });
+
+        password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updatePassword(context, firebaseUser, mAuth);
+            }
+        });
+    }
+
+    private void getUserDataFromFirebase() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 final MyUser myUser = dataSnapshot.getValue(MyUser.class);
-
-                if (myUser.getImageURL().equals("default")) {
-                    circleImageView.setImageResource(R.mipmap.ic_launcher);
-                } else {
-                    Glide.with(getApplicationContext()).load(myUser.getImageURL()).into(circleImageView);
-                }
-
-                email.setText(firebaseUser.getEmail());
-                email.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateEmail(email);
-                    }
-                });
-
-                username.setText(myUser.getUsername());
-                username.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updateUserName(myUser);
-                    }
-                });
-
-                password.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        updatePassword(context, firebaseUser, mAuth);
-                    }
-                });
-
-
+                setUserImage(myUser);
+                setUserEmail();
+                setUserName(myUser);
             }
 
             @Override
@@ -135,22 +140,34 @@ ProfileActivity extends AppCompatActivity {
                 Toast.makeText(context, "connection was lost try again later", Toast.LENGTH_SHORT).show();
             }
         });
-
-        circleImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openImage();
-            }
-        });
     }
 
-    private void openImage() {
+    private void setUserName(MyUser myUser) {
+        String name = myUser.getUsername();
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        username.setText(name);
+    }
+
+    private void setUserEmail() {
+        email.setText(firebaseUser.getEmail());
+    }
+
+    private void setUserImage(MyUser myUser) {
+        if (myUser.getImageURL().equals("default")) {
+            circleImageView.setImageResource(R.mipmap.ic_launcher);
+        } else {
+            Glide.with(getApplicationContext())
+                    .load(myUser.getImageURL())
+                    .into(circleImageView);
+        }
+    }
+
+    private void openGalleryOnDevice() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, IMAGE_REQUEST);
     }
-
 
     private String getFileExtension(Uri uri) {
         ContentResolver contentResolver = context.getContentResolver();
@@ -208,6 +225,7 @@ ProfileActivity extends AppCompatActivity {
         }
     }
 
+    //User response from gallery with chosen image
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -279,7 +297,7 @@ ProfileActivity extends AppCompatActivity {
     }
 
     //Method of username update
-    private void updateUserName(final MyUser myUser) {
+    private void updateUserName() {
 
         View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_name_updater, null, false);
         final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
@@ -305,7 +323,7 @@ ProfileActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    username.setText(myUser.getUsername());
+                                    username.setText(username.getText().toString());
                                     Toast.makeText(ProfileActivity.this, "Name was change successfully", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(ProfileActivity.this, "Can't change this name", Toast.LENGTH_SHORT).show();

@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Chat;
+package com.example.pavel.chatapp.MainActivities.UsersScreens;
 
 import android.os.Bundle;
 
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AllUsersFragment extends Fragment {
+public class FragSearchUsers extends Fragment {
 
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;

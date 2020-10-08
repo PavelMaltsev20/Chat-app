@@ -4,16 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Chat.LastChatsFragment">
+    tools:context=".MainActivities.UsersScreens.FragLastChats">
 
    <TextView
        android:id="@+id/conversationTtl"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
+       android:layout_marginStart="@dimen/standard_margin"
+       android:layout_marginLeft="@dimen/standard_margin"
+       android:layout_marginTop="@dimen/standard_margin"
+       android:layout_marginEnd="@dimen/standard_margin"
+       android:layout_marginRight="@dimen/standard_margin"
+       android:layout_marginBottom="@dimen/standard_margin"
        android:text="Last chats"
        android:textAlignment="center"
-       android:textSize="@dimen/ttlTextSize"
-       android:layout_margin="@dimen/standard_margin"/>
+       android:textColor="#FFFFFF"
+       android:textSize="@dimen/ttlTextSize" />
 
    <androidx.recyclerview.widget.RecyclerView
        android:id="@+id/conversationRV"

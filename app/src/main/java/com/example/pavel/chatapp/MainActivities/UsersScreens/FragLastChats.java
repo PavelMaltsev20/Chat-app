@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Chat;
+package com.example.pavel.chatapp.MainActivities.UsersScreens;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.pavel.chatapp.Adapter_Modul.Items.ChatList;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.Items.Token;
 import com.example.pavel.chatapp.Adapter_Modul.UserAdapter;
@@ -24,7 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class LastChatsFragment extends Fragment {
+public class FragLastChats extends Fragment {
 
     private RecyclerView recyclerView;
 

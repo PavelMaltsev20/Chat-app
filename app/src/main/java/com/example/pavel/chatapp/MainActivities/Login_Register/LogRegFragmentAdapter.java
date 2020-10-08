@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Login_Register;
+package com.example.pavel.chatapp.MainActivities.Login_Register;
 
 import android.content.Context;
 import androidx.annotation.Nullable;

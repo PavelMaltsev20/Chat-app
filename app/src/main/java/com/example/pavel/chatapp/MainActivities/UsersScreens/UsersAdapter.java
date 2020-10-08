@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Adapter_Modul;
+package com.example.pavel.chatapp.MainActivities.UsersScreens;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -7,7 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 
-public class ChatFragmentAdapter extends FragmentPagerAdapter {
+public class UsersAdapter extends FragmentPagerAdapter {
 
     ArrayList<Fragment> fragments;
     ArrayList<String> titles;
@@ -16,7 +16,7 @@ public class ChatFragmentAdapter extends FragmentPagerAdapter {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
     }
 
-    public ChatFragmentAdapter(FragmentManager fm) {
+    public UsersAdapter(FragmentManager fm) {
         super(fm);
         this.fragments=new ArrayList<>();
         this.titles=new ArrayList<>();
