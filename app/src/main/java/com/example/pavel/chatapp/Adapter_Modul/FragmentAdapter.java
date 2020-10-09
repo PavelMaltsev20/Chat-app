@@ -1,23 +1,30 @@
-package com.example.pavel.chatapp.MainActivities.Login_Register;
+package com.example.pavel.chatapp.Adapter_Modul;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+
 import java.util.ArrayList;
 
-public class LogRegFragmentAdapter extends FragmentPagerAdapter {
+public class FragmentAdapter extends FragmentPagerAdapter {
 
-    Context context;
-    ArrayList<Fragment> fragments;
-    ArrayList<String> titles;
+    private Context context;
+    private ArrayList<Fragment> fragments;
+    private ArrayList<String> titles;
 
-    public LogRegFragmentAdapter(FragmentManager fm, Context context) {
+    static {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO);
+    }
+
+    public FragmentAdapter(FragmentManager fm, Context context) {
         super(fm);
-        this.context=context;
-        this.fragments=new ArrayList<>();
-        this.titles=new ArrayList<>();
+        this.context = context;
+        this.fragments = new ArrayList<>();
+        this.titles = new ArrayList<>();
     }
 
     @Override
@@ -30,7 +37,7 @@ public class LogRegFragmentAdapter extends FragmentPagerAdapter {
         return fragments.size();
     }
 
-    public void addFragment(Fragment fragment,String title){
+    public void addFragment(Fragment fragment, String title) {
         fragments.add(fragment);
         titles.add(title);
     }

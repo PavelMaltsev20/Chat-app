@@ -33,10 +33,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private String lastMessage;
     private Context context;
     private boolean isChat;
-
-    private void setTheme() {
-
-    }
+    private ViewHolder holder;
+    private MyUser myUser;
 
     public UserAdapter(Context context, List<MyUser> myUserList, boolean isChat) {
         this.context = context;
@@ -61,53 +59,45 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        final MyUser myUser = myUserList.get(position);
+        this.holder = holder;
+        myUser = myUserList.get(position);
+
+        setIdToMyUserClass(position);
+        setUserName();
+        setUserProfileImage();
+        displayLastMessageOfSecondUser();
+        checkIfCurrentUserOnline();
+        setOnItemClickListener();
+    }
+
+    private void setIdToMyUserClass(int position) {
         myUser.setId(myUserList.get(position).getId());
+    }
+
+    private void setUserName() {
         holder.username_tv.setText(myUser.getUsername());
+    }
 
+    private void setUserProfileImage() {
         if (myUser.getImageURL().equals("default")) {
-            holder.profile_image.setImageResource(R.drawable.ic_user_profile);
+            holder.profile_image.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_user_profile));
         } else {
-            Glide.with(context).load(myUser.getImageURL()).into(holder.profile_image);
+            Glide.with(context)
+                    .load(myUser.getImageURL())
+                    .into(holder.profile_image);
         }
+    }
 
-
-        //Display last message if user not seen it yet
+    private void displayLastMessageOfSecondUser() {
         if (isChat) {
             lastMessage(myUser.getId(), holder.lastMessage_tv);
         } else {
             holder.lastMessage_tv.setVisibility(View.GONE);
         }
-
-
-        //Check if current user online
-        if (isChat) {
-            if (myUser.getStatus().equals("online")) {
-                holder.img_on.setVisibility(View.VISIBLE);
-                holder.img_off.setVisibility(View.GONE);
-            } else {
-                holder.img_on.setVisibility(View.GONE);
-                holder.img_off.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.img_on.setVisibility(View.GONE);
-            holder.img_off.setVisibility(View.GONE);
-        }
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ChatWithUserActivity.class);
-                intent.putExtra("userId", myUser.getId());
-                context.startActivity(intent);
-            }
-        });
     }
-
 
     private void lastMessage(final String userid, final TextView last_msg) {
         lastMessage = "default";
@@ -140,6 +130,32 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
+    private void checkIfCurrentUserOnline() {
+        if (isChat) {
+            if (myUser.getStatus().equals("online")) {
+                holder.img_on.setVisibility(View.VISIBLE);
+                holder.img_off.setVisibility(View.GONE);
+            } else {
+                holder.img_on.setVisibility(View.GONE);
+                holder.img_off.setVisibility(View.VISIBLE);
+            }
+        } else {
+            holder.img_on.setVisibility(View.GONE);
+            holder.img_off.setVisibility(View.GONE);
+        }
+    }
+
+    private void setOnItemClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ChatWithUserActivity.class);
+                intent.putExtra("userId", myUser.getId());
+                context.startActivity(intent);
             }
         });
     }

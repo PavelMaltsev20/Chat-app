@@ -1,5 +1,6 @@
 package com.example.pavel.chatapp.MainActivities.Login_Register;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,7 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
 import com.example.pavel.chatapp.MainActivities.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -32,6 +33,11 @@ public class FragLogin extends Fragment {
     private Button confirmLogin, cancelLogin;
     private TextView resetPassword;
     private ProgressBar progressBar;
+    private Context context;
+
+    public FragLogin(Context context){
+        this.context = context;
+    }
 
     @Nullable
     @Override
@@ -107,12 +113,11 @@ public class FragLogin extends Fragment {
 
     private void initializeAlertDialogForResetPassword() {
         ProfileActivity profileActivity = new ProfileActivity();
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        profileActivity.updatePassword(getView().getContext(), firebaseUser, mAuth);
+        profileActivity.initAlertDialogForUpdatePass(context);
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(getView().getContext(), ActivityUsersContainer.class);
+        Intent intent = new Intent(getView().getContext(), ActivityUsers.class);
         startActivity(intent);
         Toast.makeText(getView().getContext(), "Welcome", Toast.LENGTH_SHORT).show();
     }

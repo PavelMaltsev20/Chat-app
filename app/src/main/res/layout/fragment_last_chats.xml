@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,23 +11,32 @@
        android:id="@+id/conversationTtl"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
-       android:layout_marginStart="@dimen/standard_margin"
-       android:layout_marginLeft="@dimen/standard_margin"
-       android:layout_marginTop="@dimen/standard_margin"
-       android:layout_marginEnd="@dimen/standard_margin"
-       android:layout_marginRight="@dimen/standard_margin"
-       android:layout_marginBottom="@dimen/standard_margin"
+       android:gravity="center"
        android:text="Last chats"
-       android:textAlignment="center"
        android:textColor="#FFFFFF"
-       android:textSize="@dimen/ttlTextSize" />
+       android:textSize="@dimen/ttlTextSize"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toTopOf="parent" />
 
    <androidx.recyclerview.widget.RecyclerView
        android:id="@+id/conversationRV"
        android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:layout_below="@+id/conversationTtl"
+       android:layout_height="0dp"
        android:layout_margin="@dimen/standard_margin"
-       />
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toBottomOf="@+id/conversationTtl" />
 
-</RelativeLayout>
+   <ProgressBar
+       android:id="@+id/fragLastChats_PB"
+       style="?android:attr/progressBarStyle"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       app:layout_constraintBottom_toBottomOf="parent"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       app:layout_constraintTop_toBottomOf="@+id/conversationTtl" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

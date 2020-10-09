@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -31,8 +31,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
-
-//TODO make toasts for register method, notify user what happen in current time
 
 public class FragRegister extends Fragment {
 
@@ -128,7 +126,7 @@ public class FragRegister extends Fragment {
 
     private void addUserToFirebaseAuth(final String mail, final String pass) {
         //Check if current email exist in firebase database
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        initDatabaseReference();
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -152,21 +150,7 @@ public class FragRegister extends Fragment {
                                         hashMap.put("status", "offline");
                                         hashMap.put("search", username_et.getText().toString().toLowerCase());
 
-
-                                        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-                                        databaseReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-
-                                                    Intent intent = new Intent(context, ActivityUsersContainer.class);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                                    startActivity(intent);
-                                                    Toast.makeText(context, username_et.getText().toString() + getString(R.string.toast_reg_welcome_to_chat), Toast.LENGTH_SHORT).show();
-
-                                                }
-                                            }
-                                        });
+                                        setBaseUserDataInFirebase(hashMap);
                                     }
                                 }
                             });
@@ -184,6 +168,29 @@ public class FragRegister extends Fragment {
         });
 
 
+    }
+
+    private void setBaseUserDataInFirebase(HashMap<String, String> hashMap) {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+        databaseReference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    startChatActivity();
+                    Toast.makeText(context, username_et.getText().toString() + getString(R.string.toast_reg_welcome_to_chat), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void initDatabaseReference() {
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+    }
+
+    private void startChatActivity() {
+        Intent intent = new Intent(context, ActivityUsers.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
 

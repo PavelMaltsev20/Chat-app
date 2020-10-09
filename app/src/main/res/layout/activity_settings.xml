@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activitySettings"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivities.SettingsActivity"
-    android:background="@drawable/main_background">
+    android:background="@drawable/app_background_green"
+    tools:context=".MainActivities.SettingsActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chat app"
-        android:textSize="@dimen/ttlTextSize"
-        android:gravity="center"
-        android:layout_alignParentTop="true"
         android:id="@+id/settingsTtl"
-        android:layout_margin="@dimen/standard_margin"
-        android:textColor="@color/white"/>
-
-    <LinearLayout
-        android:id="@+id/settingsLLDesign"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/settingsTtl"
-        android:orientation="horizontal"
         android:layout_margin="@dimen/standard_margin"
-        >
+        android:gravity="center"
+        android:text="Chat app"
+        android:textColor="@color/white"
+        android:textSize="@dimen/ttlTextSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/settingsSwitchDesign"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <TextView
         android:id="@+id/settingsSwitchDesign"
-        android:layout_width="0dp"
-        android:layout_weight="2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/settingsChooseTheme"
-        android:textSize="@dimen/textSizeOfSimpleElements"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
         android:gravity="center"
+        android:text="@string/settingsChooseTheme"
         android:textColor="@color/white"
-        />
+        android:textSize="@dimen/textSizeOfSimpleElements"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsTtl" />
 
     <Switch
         android:id="@+id/settingsSwitch"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
         android:paddingRight="30dp"
-        />
-    </LinearLayout>
+        app:layout_constraintStart_toEndOf="@+id/settingsSwitchDesign"
+        app:layout_constraintTop_toBottomOf="@+id/settingsTtl" />
 
-    <LinearLayout
-        android:id="@+id/settingsSendBugs"
+    <TextView
+        android:id="@+id/settingTVBugs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/standard_margin"
-        android:layout_alignParentBottom="true">
-
-        <TextView
-            android:id="@+id/settingTVBugs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settingsMessageAboutBug"
-            android:textSize="@dimen/textSizeOfSimpleElements"
-            android:gravity="center"
-            android:textColor="@color/white"/>
-    </LinearLayout>
-</RelativeLayout>
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="@string/settingsMessageAboutBug"
+        android:textColor="@color/white"
+        android:textSize="@dimen/textSizeOfSimpleElements"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

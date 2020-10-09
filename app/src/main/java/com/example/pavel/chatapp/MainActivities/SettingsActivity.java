@@ -1,17 +1,18 @@
 package com.example.pavel.chatapp.MainActivities;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
 import com.example.pavel.chatapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -21,23 +22,23 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(ActivityUsers.setTheme(this, initView()));
+
+        initializeObjects();
         setupSwitch();
     }
 
-    private void setTheme() {
+    public View initView() {
+        return LayoutInflater.from(this).inflate(R.layout.activity_settings, null, false);
+    }
+
+    private void initializeObjects() {
+        mySwitch = findViewById(R.id.settingsSwitch);
         sharedPreferences = new SharedPref(this);
-        if (sharedPreferences.loadNightModeState() == true) {
-            setTheme(R.style.AppTheme2);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
     }
 
     private void setupSwitch() {
-        mySwitch = findViewById(R.id.settingsSwitch);
 
         if (sharedPreferences.loadNightModeState() == true) {
             mySwitch.setChecked(true);
@@ -67,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, ActivityUsersContainer.class);
+        Intent intent = new Intent(this, ActivityUsers.class);
         if (sharedPreferences.loadNightModeState() == true)
             intent.putExtra("first_theme", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

@@ -7,16 +7,19 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.bumptech.glide.Glide;
+import com.example.pavel.chatapp.Adapter_Modul.FragmentAdapter;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
 import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
@@ -33,7 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ActivityUsersContainer extends AppCompatActivity {
+public class ActivityUsers extends AppCompatActivity {
 
     private final String TAG = "ActivityUsersContainer";
     private DatabaseReference databaseReference;
@@ -44,29 +47,37 @@ public class ActivityUsersContainer extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        updateNewTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(ActivityUsers.setTheme(this, initView()));
+
         fragmentCreating();
         initializeObjects();
+        initializeReference();
+        initializeServiceIntent();
+        setTitleWithUserName();
     }
 
-    private void updateNewTheme() {
-        sharedPref = new SharedPref(this);
-        if (sharedPref.loadNightModeState() == true) {
-            setTheme(R.style.AppTheme2);
+    public static View setTheme(Context context, View view) {
+        SharedPref sharedPreferences = new SharedPref(context);
+        if (sharedPreferences.loadNightModeState()) {
+            context.setTheme(R.style.AppTheme2);
+            view.setBackground(AppCompatResources.getDrawable(context, R.drawable.app_background_blue));
         } else {
-            setTheme(R.style.AppTheme);
+            context.setTheme(R.style.AppTheme);
+            view.setBackground(AppCompatResources.getDrawable(context, R.drawable.app_background_green));
         }
+        return view;
+    }
+
+    public View initView() {
+        return LayoutInflater.from(this).inflate(R.layout.activity_users, null, false);
     }
 
     private void initializeObjects() {
         context = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
-        initializeReference();
-        initializeServiceIntent();
-        setTitleWithUserName();
+        sharedPref = new SharedPref(this);
     }
 
     private void initializeReference() {
@@ -111,10 +122,10 @@ public class ActivityUsersContainer extends AppCompatActivity {
     }
 
     private PagerAdapter getUsersAdapter() {
-        UsersAdapter usersAdapter = new UsersAdapter(getSupportFragmentManager());
-        usersAdapter.addFragment(new FragLastChats(), "Last Chats");
-        usersAdapter.addFragment(new FragSearchUsers(), "Users");
-        return usersAdapter;
+        FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), context);
+        fragmentAdapter.addFragment(new FragLastChats(), "Last Chats");
+        fragmentAdapter.addFragment(new FragSearchUsers(), "Users");
+        return fragmentAdapter;
     }
 
     //----------------------------Menu part ----------------------------------------
@@ -129,14 +140,14 @@ public class ActivityUsersContainer extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch ((item.getItemId())) {
             case R.id.menuProfile:
-                startActivity(new Intent(ActivityUsersContainer.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsers.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuSettings:
-                startActivity(new Intent(ActivityUsersContainer.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsers.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuLogout:
                 mAuth.signOut();
-                Intent intent1 = new Intent(ActivityUsersContainer.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent1 = new Intent(ActivityUsers.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent1);
                 return true;
         }
@@ -146,10 +157,7 @@ public class ActivityUsersContainer extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        finish();
     }
 
     //----------------------------NotificationService part ----------------------------------------

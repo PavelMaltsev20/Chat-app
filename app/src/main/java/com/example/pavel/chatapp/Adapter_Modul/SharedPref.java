@@ -11,8 +11,7 @@ public class SharedPref {
     SharedPreferences mySharedPreferences;
 
     public SharedPref(Context context) {
-        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        mySharedPreferences = context.getSharedPreferences(userEmail + "_shared_pref", Context.MODE_PRIVATE);
+        mySharedPreferences = context.getSharedPreferences("shared_pref", Context.MODE_PRIVATE);
     }
 
     public void setNightModeState(Boolean state) {

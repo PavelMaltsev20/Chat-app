@@ -17,12 +17,14 @@ import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,47 +49,50 @@ import java.util.HashMap;
 public class
 ProfileActivity extends AppCompatActivity {
 
+    private TextView title, email_tv, username_tv, password_tv;
+    private EditText email_name_et, pass_et;
     private CircleImageView circleImageView;
-    private TextView email, username, password;
+    private Button confirm, cancel;
+    private ProgressBar progressBar;
     private Context context;
 
-    private FirebaseAuth mAuth;
-    private FirebaseUser firebaseUser;
-    private DatabaseReference databaseReference;
-
-    private StorageReference storageReference;
     private static final int IMAGE_REQUEST = 1;
-    private Uri imageUri;
     private StorageTask uploadTask;
     private SharedPref sharedPref;
+    private Uri imageUri;
+
+    private int email_update_task = 1;
+    private int name_update_task = 2;
+    private int pass_update_task = 3;
+
+    private DatabaseReference databaseReference;
+    private StorageReference storageReference;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme();
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(ActivityUsers.setTheme(this, initView()));
 
         initializeObjects();
         setListeners();
         getUserDataFromFirebase();
     }
 
-    private void setTheme() {
-        sharedPref = new SharedPref(this);
-        if (sharedPref.loadNightModeState() == true) {
-            setTheme(R.style.AppTheme2);
-        } else {
-            setTheme(R.style.AppTheme);
-        }
+    public View initView() {
+        return LayoutInflater.from(this).inflate(R.layout.activity_profile, null, false);
     }
 
     private void initializeObjects() {
-        context = this;
+        if (context == null)//if called from login fragment
+            context = this;
 
         circleImageView = findViewById(R.id.profile_IV);
-        email = findViewById(R.id.profile_TV_email);
-        username = findViewById(R.id.profile_TV_name);
-        password = findViewById(R.id.profile_TV_pass);
+        email_tv = findViewById(R.id.profile_TV_email);
+        username_tv = findViewById(R.id.profile_TV_name);
+        password_tv = findViewById(R.id.profile_TV_pass);
+        progressBar = findViewById(R.id.profile_PB);
 
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
@@ -103,24 +108,24 @@ ProfileActivity extends AppCompatActivity {
             }
         });
 
-        email.setOnClickListener(new View.OnClickListener() {
+        email_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateEmail(email);
+                initAlertDialogForUpdateEmail();
             }
         });
 
-        username.setOnClickListener(new View.OnClickListener() {
+        username_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateUserName();
+                initAlertDialogForUpdateName();
             }
         });
 
-        password.setOnClickListener(new View.OnClickListener() {
+        password_tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updatePassword(context, firebaseUser, mAuth);
+                initAlertDialogForUpdatePass(context);
             }
         });
     }
@@ -142,19 +147,9 @@ ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void setUserName(MyUser myUser) {
-        String name = myUser.getUsername();
-        name = name.substring(0, 1).toUpperCase() + name.substring(1);
-        username.setText(name);
-    }
-
-    private void setUserEmail() {
-        email.setText(firebaseUser.getEmail());
-    }
-
     private void setUserImage(MyUser myUser) {
         if (myUser.getImageURL().equals("default")) {
-            circleImageView.setImageResource(R.mipmap.ic_launcher);
+            circleImageView.setImageResource(R.drawable.ic_user_profile);
         } else {
             Glide.with(getApplicationContext())
                     .load(myUser.getImageURL())
@@ -162,6 +157,48 @@ ProfileActivity extends AppCompatActivity {
         }
     }
 
+    private void setUserEmail() {
+        email_tv.setText(firebaseUser.getEmail());
+    }
+
+    private void setUserName(MyUser myUser) {
+        String name = myUser.getUsername();
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
+        username_tv.setText(name);
+    }
+
+    //----------------------------------------Part of updating user data in firebase----------------------------------------
+    private View initObjectsForAlertDialog(int task) {
+        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_update_user_data, null, false);
+        title = view.findViewById(R.id.alertDialog_title);
+        email_name_et = view.findViewById(R.id.alertDialog_updateEmail);
+        pass_et = view.findViewById(R.id.alertDialog_updatePass);
+        confirm = view.findViewById(R.id.alertDialog_btnConfirm);
+        cancel = view.findViewById(R.id.alertDialog_btnCancel);
+
+        setUpAlertDialogForCurrentTask(task);
+
+        return view;
+    }
+
+    private void setUpAlertDialogForCurrentTask(int task) {
+        if (task == email_update_task) {
+            title.setText("Changing email");
+            email_name_et.setHint("Enter new email");
+            pass_et.setHint("Enter password");
+        } else if (task == name_update_task) {
+            title.setText("Changing name");
+            email_name_et.setHint("Enter name");
+            pass_et.setVisibility(View.GONE);
+        } else if (task == pass_update_task) {
+            title.setText("Changing password");
+            email_name_et.setHint("Enter email for change password");
+            pass_et.setVisibility(View.GONE);
+        }
+
+    }
+
+    //---------------------Update image---------------------
     private void openGalleryOnDevice() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -173,6 +210,23 @@ ProfileActivity extends AppCompatActivity {
         ContentResolver contentResolver = context.getContentResolver();
         MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
         return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+            imageUri = data.getData();
+
+            if (uploadTask != null && uploadTask.isInProgress()) {
+                Toast.makeText(context, "Upload in progress", Toast.LENGTH_SHORT).show();
+            } else {
+                progressBar.setVisibility(View.VISIBLE);
+                uploadImage();
+            }
+        }
     }
 
     private void uploadImage() {
@@ -223,66 +277,18 @@ ProfileActivity extends AppCompatActivity {
             Toast.makeText(context, "No image selected", Toast.LENGTH_SHORT).show();
             pd.dismiss();
         }
+        progressBar.setVisibility(View.GONE);
     }
 
-    //User response from gallery with chosen image
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null) {
-            imageUri = data.getData();
-
-            if (uploadTask != null && uploadTask.isInProgress()) {
-                Toast.makeText(context, "Upload in progress", Toast.LENGTH_SHORT).show();
-            } else {
-                uploadImage();
-            }
-        }
-    }
-
-    //Method of email update
-    private void updateEmail(final TextView emailTV) {
-
-        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_email_updater, null, false);
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
-
-        final EditText email = view.findViewById(R.id.emailUpET);
-        final EditText passConfirm = view.findViewById(R.id.emailUpPassConfirm);
-
-        Button confirm = view.findViewById(R.id.emailUpBtnConfirm);
-        Button cancel = view.findViewById(R.id.emailUpBtnCancel);
+    //---------------------Update email---------------------
+    private void initAlertDialogForUpdateEmail() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(initObjectsForAlertDialog(email_update_task)).show();
 
         confirm.setOnClickListener(new View.OnClickListener() {
-
-
             @Override
             public void onClick(View v) {
-
-                AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), passConfirm.getText().toString());
-                firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(ProfileActivity.this, "password is not correct", Toast.LENGTH_SHORT).show();
-                        } else {
-                            firebaseUser.updateEmail(email.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        emailTV.setText(email.getText().toString());
-                                        HashMap<String, Object> hashMap = new HashMap<>();
-                                        hashMap.put("email", email.getText().toString());
-                                        databaseReference.updateChildren(hashMap);
-                                        Toast.makeText(ProfileActivity.this, "Email was changed", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-
+                progressBar.setVisibility(View.VISIBLE);
+                updateEmailInFirebase();
                 alertDialog.dismiss();
             }
         });
@@ -293,58 +299,46 @@ ProfileActivity extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         });
-
     }
 
-    //Method of username update
-    private void updateUserName() {
-
-        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_name_updater, null, false);
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
-
-        final EditText username = view.findViewById(R.id.nameUpET);
-
-        Button confirm = view.findViewById(R.id.nameUpBtnConfirm);
-        final Button cancel = view.findViewById(R.id.nameUpBtnCancel);
-
-        confirm.setOnClickListener(new View.OnClickListener() {
+    private void updateEmailInFirebase() {
+        AuthCredential credential = EmailAuthProvider.getCredential(firebaseUser.getEmail(), pass_et.getText().toString());
+        firebaseUser.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onClick(View v) {
-                databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("username", username.getText().toString());
-
-
-                        databaseReference.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    username.setText(username.getText().toString());
-                                    Toast.makeText(ProfileActivity.this, "Name was change successfully", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(ProfileActivity.this, "Can't change this name", Toast.LENGTH_SHORT).show();
-                                }
+            public void onComplete(@NonNull Task<Void> task) {
+                if (!task.isSuccessful()) {
+                    Toast.makeText(ProfileActivity.this, "password is not correct", Toast.LENGTH_SHORT).show();
+                } else {
+                    firebaseUser.updateEmail(ProfileActivity.this.email_name_et.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                email_tv.setText(ProfileActivity.this.email_name_et.getText().toString());
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("email", ProfileActivity.this.email_name_et.getText().toString());
+                                databaseReference.updateChildren(hashMap);
+                                Toast.makeText(ProfileActivity.this, "Email was changed", Toast.LENGTH_SHORT).show();
                             }
-                        });
-                        alertDialog.dismiss();
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
+                        }
+                    });
+                }
+                progressBar.setVisibility(View.GONE);
             }
         });
+    }
 
+    //---------------------Update name---------------------
+    private void initAlertDialogForUpdateName() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(initObjectsForAlertDialog(name_update_task)).show();
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+                updateNameInFirebase();
+                alertDialog.dismiss();
+            }
+        });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -353,37 +347,52 @@ ProfileActivity extends AppCompatActivity {
         });
     }
 
-    //Method of password update
-    public void updatePassword(final Context context, final FirebaseUser firebaseUser, final FirebaseAuth mAuth) {
-
-        View view = LayoutInflater.from(context).inflate(R.layout.alert_dialog_password_updater, null, false);
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).setView(view).show();
-
-        final EditText email = view.findViewById(R.id.passUpETEmail);
-
-        Button confirm = view.findViewById(R.id.passUpBtnConfirm);
-        Button cancel = view.findViewById(R.id.passUpBtnCancel);
-
-        confirm.setOnClickListener(new View.OnClickListener() {
+    private void updateNameInFirebase() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                HashMap<String, Object> hashMap = new HashMap<>();
+                hashMap.put("username", email_name_et.getText().toString());
 
-                mAuth.sendPasswordResetEmail(email.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                databaseReference.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(context, "Email for reset password was sending to you", Toast.LENGTH_SHORT).show();
-                            alertDialog.dismiss();
+                            email_name_et.setText(email_name_et.getText().toString());
+                            Toast.makeText(ProfileActivity.this, "Name was changed successfully", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Current email doesn't exist in the system", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ProfileActivity.this, "Can't change this name", Toast.LENGTH_SHORT).show();
                         }
+                        progressBar.setVisibility(View.GONE);
+
                     }
                 });
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                progressBar.setVisibility(View.GONE);
 
             }
         });
+    }
 
+    //---------------------Update pass---------------------
+    public void initAlertDialogForUpdatePass(Context context) {
+        this.context = context;
+        final AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setView(initObjectsForAlertDialog(pass_update_task))
+                .show();
+
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (progressBar != null)//if called from login fragment
+                    progressBar.setVisibility(View.VISIBLE);
+                sendEmailForResetPass();
+                alertDialog.dismiss();
+            }
+        });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -392,6 +401,21 @@ ProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void sendEmailForResetPass() {
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.sendPasswordResetEmail(email_name_et.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(context, "Email for reset password was sent to you", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Current email doesn't exist in the system", Toast.LENGTH_SHORT).show();
+                }
+                if (progressBar != null) //if called from login fragment
+                    progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
 
 }
 

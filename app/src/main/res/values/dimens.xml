@@ -5,4 +5,5 @@
     <dimen name="textSizeOfProfileElements">20dp</dimen>
     <dimen name="textSizeOfSimpleElements">20dp</dimen>
     <dimen name="title_text_size">30sp</dimen>
+    <dimen name="standard_padding">20dp</dimen>
 </resources>

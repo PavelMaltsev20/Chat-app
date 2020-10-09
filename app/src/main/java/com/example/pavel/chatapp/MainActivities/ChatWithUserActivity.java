@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -14,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -21,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.MessageAdapter;
 import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
+import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
 import com.example.pavel.chatapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,7 +65,7 @@ public class ChatWithUserActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_with_user);
+        setContentView(ActivityUsers.setTheme(this, initView()));
 
         context = this;
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -71,6 +75,9 @@ public class ChatWithUserActivity extends Activity {
         setPointer();
     }
 
+    public View initView() {
+        return LayoutInflater.from(this).inflate(R.layout.activity_chat_with_user, null, false);
+    }
 
     private void setPointer() {
         sendBtn = findViewById(R.id.chatWithUserFAB);
@@ -177,7 +184,6 @@ public class ChatWithUserActivity extends Activity {
 
     }
 
-
     //Get messages from firebase database
     private void readMessages(final String myId, final String userId, final String imageUrl) {
 
@@ -213,7 +219,6 @@ public class ChatWithUserActivity extends Activity {
         });
     }
 
-
     //Check if current user online or offline
     private void status(String status) {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
@@ -223,7 +228,6 @@ public class ChatWithUserActivity extends Activity {
 
         databaseReference.updateChildren(hashMap);
     }
-
 
     @Override
     public void onResume() {

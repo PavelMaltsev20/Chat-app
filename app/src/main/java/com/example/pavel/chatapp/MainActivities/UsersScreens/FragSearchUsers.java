@@ -36,45 +36,26 @@ public class FragSearchUsers extends Fragment {
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
     private List<MyUser> mUsers;
-
-    EditText search_user;
+    private EditText search_user;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_users, container, false);
-
-        recyclerView = view.findViewById(R.id.usersRVL);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mUsers = new ArrayList<>();
-
+        View view = inflater.inflate(R.layout.fragment_search_users, container, false);
+        initializeObjects(view);
         readUsers();
-
-        search_user = view.findViewById(R.id.usersFragEditText);
-        search_user.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchUser(s.toString().toLowerCase());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
+        userSearchListener();
         return view;
     }
 
+    private void initializeObjects(View view) {
+        recyclerView = view.findViewById(R.id.usersRVL);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        search_user = view.findViewById(R.id.usersFragEditText);
+        mUsers = new ArrayList<>();
+    }
 
-    //Method to display all users
     private void readUsers() {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
@@ -98,7 +79,6 @@ public class FragSearchUsers extends Fragment {
 
                     userAdapter = new UserAdapter(getActivity(), mUsers, false);
                     recyclerView.setAdapter(userAdapter);
-
                 }
             }
 
@@ -109,7 +89,25 @@ public class FragSearchUsers extends Fragment {
         });
     }
 
-    //Method of search current user
+    private void userSearchListener() {
+        search_user.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchUser(s.toString().toLowerCase());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
     private void searchUser(String s) {
 
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
