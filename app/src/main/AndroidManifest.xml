@@ -27,7 +27,7 @@
         <activity android:name=".MainActivities.SettingsActivity" />
         <activity android:name=".MainActivities.ProfileActivity" />
         <activity android:name=".MainActivities.ChatWithUserActivity" />
-        <activity android:name=".MainActivities.UsersScreens.ActivityUsers" />
+        <activity android:name=".MainActivities.UsersScreens.ActivityUsersContainer" />
         <activity android:name=".Services.App" />
 
         <service android:name=".Services.NotificationService" />

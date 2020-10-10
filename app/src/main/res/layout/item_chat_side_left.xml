@@ -9,7 +9,6 @@
         android:id="@+id/textOfMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/profile_image"
         android:layout_marginLeft="5dp"
         android:text="Hello"
         android:textSize="18sp"

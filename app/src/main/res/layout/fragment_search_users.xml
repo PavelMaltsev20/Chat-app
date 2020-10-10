@@ -7,7 +7,7 @@
     tools:context=".MainActivities.UsersScreens.FragSearchUsers">
 
     <EditText
-        android:id="@+id/usersFragEditText"
+        android:id="@+id/searchUsers_ET_search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -25,10 +25,10 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/usersRVL"
+        android:id="@+id/searchUsers_RV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/usersFragEditText"
+        android:layout_below="@+id/searchUsers_ET_search"
         android:layout_margin="@dimen/standard_margin"/>
 
 </RelativeLayout>

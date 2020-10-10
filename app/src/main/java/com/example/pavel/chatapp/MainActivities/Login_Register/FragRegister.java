@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -188,7 +188,7 @@ public class FragRegister extends Fragment {
     }
 
     private void startChatActivity() {
-        Intent intent = new Intent(context, ActivityUsers.class);
+        Intent intent = new Intent(context, ActivityUsersContainer.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

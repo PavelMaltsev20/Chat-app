@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class FragSearchUsers extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search_users, container, false);
+        View view = inflater.inflate(R.layout.fragment_search_users, null, false);
         initializeObjects(view);
         readUsers();
         userSearchListener();
@@ -49,10 +50,10 @@ public class FragSearchUsers extends Fragment {
     }
 
     private void initializeObjects(View view) {
-        recyclerView = view.findViewById(R.id.usersRVL);
+        search_user = view.findViewById(R.id.searchUsers_ET_search);
+        recyclerView = view.findViewById(R.id.searchUsers_RV);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        search_user = view.findViewById(R.id.usersFragEditText);
         mUsers = new ArrayList<>();
     }
 
@@ -60,7 +61,7 @@ public class FragSearchUsers extends Fragment {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -77,7 +78,8 @@ public class FragSearchUsers extends Fragment {
                         }
                     }
 
-                    userAdapter = new UserAdapter(getActivity(), mUsers, false);
+
+                    userAdapter = new UserAdapter(getContext(), mUsers, false);
                     recyclerView.setAdapter(userAdapter);
                 }
             }

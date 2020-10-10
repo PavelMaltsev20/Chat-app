@@ -36,7 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public class ActivityUsers extends AppCompatActivity {
+public class ActivityUsersContainer extends AppCompatActivity {
 
     private final String TAG = "ActivityUsersContainer";
     private DatabaseReference databaseReference;
@@ -48,7 +48,7 @@ public class ActivityUsers extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityUsers.setTheme(this, initView()));
+        setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
         fragmentCreating();
         initializeObjects();
@@ -81,7 +81,7 @@ public class ActivityUsers extends AppCompatActivity {
     }
 
     private void initializeReference() {
-        if (firebaseUser.getUid() != null) {
+        if (firebaseUser != null && firebaseUser.getUid() != null) {
             databaseReference = FirebaseDatabase.getInstance()
                     .getReference("Users")
                     .child(firebaseUser.getUid());
@@ -140,15 +140,16 @@ public class ActivityUsers extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch ((item.getItemId())) {
             case R.id.menuProfile:
-                startActivity(new Intent(ActivityUsers.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsersContainer.this, ProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuSettings:
-                startActivity(new Intent(ActivityUsers.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(ActivityUsersContainer.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             case R.id.menuLogout:
                 mAuth.signOut();
-                Intent intent1 = new Intent(ActivityUsers.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Intent intent1 = new Intent(ActivityUsersContainer.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent1);
+                finish();
                 return true;
         }
         return false;
@@ -157,6 +158,7 @@ public class ActivityUsers extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        context.unbindService(serviceConnection);
         finish();
     }
 

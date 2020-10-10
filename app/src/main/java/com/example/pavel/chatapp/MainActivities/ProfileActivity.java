@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -73,7 +73,7 @@ ProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityUsers.setTheme(this, initView()));
+        setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
         initializeObjects();
         setListeners();
@@ -165,6 +165,12 @@ ProfileActivity extends AppCompatActivity {
         String name = myUser.getUsername();
         name = name.substring(0, 1).toUpperCase() + name.substring(1);
         username_tv.setText(name);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     //----------------------------------------Part of updating user data in firebase----------------------------------------

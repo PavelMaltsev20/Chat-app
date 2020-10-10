@@ -17,13 +17,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.MainActivities.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.example.pavel.chatapp.R;
 
 public class FragLogin extends Fragment {
@@ -117,7 +116,7 @@ public class FragLogin extends Fragment {
     }
 
     private void startMainActivity() {
-        Intent intent = new Intent(getView().getContext(), ActivityUsers.class);
+        Intent intent = new Intent(getView().getContext(), ActivityUsersContainer.class);
         startActivity(intent);
         Toast.makeText(getView().getContext(), "Welcome", Toast.LENGTH_SHORT).show();
     }

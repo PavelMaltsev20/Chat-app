@@ -51,7 +51,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = messageList.get(position);
         setTextOfMessage(holder, message.getMessage());
-        setImageToCurrentMessage(holder);
         notifyUserAboutStatusOfMessage(position, holder, message);
     }
 
@@ -71,16 +70,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         holder.textOfMessage.setText(text);
     }
 
-    private void setImageToCurrentMessage(ViewHolder holder) {
-        if (imageUrl.equals("default")) {
-            holder.profile_image.setImageResource(R.mipmap.ic_launcher);
-        } else {
-            Glide.with(context)
-                    .load(imageUrl)
-                    .into(holder.profile_image);
-        }
-    }
-
     //Checking which side message should be displayed
     @Override
     public int getItemViewType(int position) {
@@ -98,14 +87,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         private TextView textOfMessage, notifyIfMessageIsSeen;
-        private ImageView profile_image;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textOfMessage = itemView.findViewById(R.id.textOfMessage);
             notifyIfMessageIsSeen = itemView.findViewById(R.id.notifyIfMessageIsSeen);
-            profile_image = itemView.findViewById(R.id.profile_image);
         }
     }
 

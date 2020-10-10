@@ -2,11 +2,13 @@ package com.example.pavel.chatapp.Adapter_Modul;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
@@ -65,16 +68,11 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         this.holder = holder;
         myUser = myUserList.get(position);
 
-        setIdToMyUserClass(position);
         setUserName();
         setUserProfileImage();
-        displayLastMessageOfSecondUser();
+        displayLastMessageOfCurrentUser();
         checkIfCurrentUserOnline();
-        setOnItemClickListener();
-    }
-
-    private void setIdToMyUserClass(int position) {
-        myUser.setId(myUserList.get(position).getId());
+        setOnItemClickListener(myUserList.get(position));
     }
 
     private void setUserName() {
@@ -91,7 +89,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    private void displayLastMessageOfSecondUser() {
+    private void displayLastMessageOfCurrentUser() {
         if (isChat) {
             lastMessage(myUser.getId(), holder.lastMessage_tv);
         } else {
@@ -104,34 +102,36 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
 
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (firebaseUser != null) {
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message chat = snapshot.getValue(Message.class);
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
-                            chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
-                        lastMessage = chat.getMessage();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Message chat = snapshot.getValue(Message.class);
+                        if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid) ||
+                                chat.getReceiver().equals(userid) && chat.getSender().equals(firebaseUser.getUid())) {
+                            lastMessage = chat.getMessage();
+                        }
                     }
+
+                    switch (lastMessage) {
+                        case "default":
+                            last_msg.setText("No message");
+                            break;
+
+                        default:
+                            last_msg.setText(lastMessage);
+                            break;
+                    }
+                    lastMessage = "default";
                 }
 
-                switch (lastMessage) {
-                    case "default":
-                        last_msg.setText("No message");
-                        break;
-
-                    default:
-                        last_msg.setText(lastMessage);
-                        break;
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
-                lastMessage = "default";
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+            });
+        }
     }
 
     private void checkIfCurrentUserOnline() {
@@ -149,12 +149,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    private void setOnItemClickListener() {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+    private void setOnItemClickListener(final MyUser chatWithThisUser) {
+        holder.parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, ChatWithUserActivity.class);
-                intent.putExtra("userId", myUser.getId());
+                intent.putExtra("userId", chatWithThisUser.getId());
                 context.startActivity(intent);
             }
         });
@@ -167,11 +167,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+        private ConstraintLayout parent;
         private TextView username_tv, lastMessage_tv;
         private ImageView profile_image, img_on, img_off;
 
         public ViewHolder(View itemView) {
             super(itemView);
+            parent = itemView.findViewById(R.id.itemUser);
             username_tv = itemView.findViewById(R.id.userItem_TV_userName);
             lastMessage_tv = itemView.findViewById(R.id.userItem_TV_last_msg);
             profile_image = itemView.findViewById(R.id.userItem_IV_profileImage);

@@ -1,9 +1,11 @@
 package com.example.pavel.chatapp.MainActivities.UsersScreens;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -39,36 +41,13 @@ public class FragLastChats extends Fragment {
     private ProgressBar progressBar;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_last_chats, container, false);
-
         initializeObjects(view);
         initializeListeners();
-
         updateToken(FirebaseInstanceId.getInstance().getToken());
+
         return view;
-    }
-
-    private void initializeListeners() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                usersList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    ChatList chatlist = snapshot.getValue(ChatList.class);
-                    usersList.add(chatlist);
-                }
-                chatList();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void initializeObjects(View view) {
@@ -80,7 +59,38 @@ public class FragLastChats extends Fragment {
         progressBar = view.findViewById(R.id.fragLastChats_PB);
     }
 
-    //Display users that we chatted with them
+    private void initializeListeners() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                usersList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatList chatlist = snapshot.getValue(ChatList.class);
+                    usersList.add(chatlist);
+                }
+
+                checkIfListIsEmpty();
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void checkIfListIsEmpty() {
+        if (usersList.size() == 0) {
+            Toast.makeText(getContext(), "You have not conversations with other users", Toast.LENGTH_SHORT).show();
+            progressBar.setVisibility(View.GONE);
+        } else {
+            chatList();
+        }
+    }
+
+    //Display users that user chatted with them
     private void chatList() {
         myUserList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
@@ -88,10 +98,10 @@ public class FragLastChats extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 myUserList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     MyUser user = snapshot.getValue(MyUser.class);
-                    for (ChatList chatlist : usersList){
-                        if (user.getId().equals(chatlist.getId())){
+                    for (ChatList chatlist : usersList) {
+                        if (user.getId().equals(chatlist.getId())) {
                             myUserList.add(user);
                         }
                     }
@@ -108,7 +118,7 @@ public class FragLastChats extends Fragment {
         });
     }
 
-    private void updateToken(String token){
+    private void updateToken(String token) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
         Token token1 = new Token(token);
         reference.child(firebaseUser.getUid()).setValue(token1);

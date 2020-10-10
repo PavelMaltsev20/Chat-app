@@ -1,7 +1,6 @@
 package com.example.pavel.chatapp.MainActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,8 +10,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
-import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -23,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityUsers.setTheme(this, initView()));
+        setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
         initializeObjects();
         setupSwitch();
@@ -68,11 +66,12 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Intent intent = new Intent(this, ActivityUsers.class);
+        Intent intent = new Intent(this, ActivityUsersContainer.class);
         if (sharedPreferences.loadNightModeState() == true)
             intent.putExtra("first_theme", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
+        finish();
     }
 
 

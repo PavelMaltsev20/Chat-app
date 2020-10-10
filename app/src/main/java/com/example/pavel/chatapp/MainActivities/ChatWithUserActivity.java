@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,8 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.Adapter_Modul.MessageAdapter;
 import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
 import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsers;
+import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,50 +41,46 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatWithUserActivity extends Activity {
 
+    private DatabaseReference databaseReference;
+    private ValueEventListener seenListener;
     private CircleImageView profile_image;
+    private MessageAdapter messageAdapter;
+    private FloatingActionButton sendBtn;
+    private RecyclerView recyclerView;
+    private List<Message> messageList;
+    private FirebaseUser firebaseUser;
+    private EditText message_et;
+    private String secondUserIdFromIntent;
     private TextView username;
     private Context context;
-
-    private FirebaseUser firebaseUser;
-    private DatabaseReference databaseReference;
-
     private Intent intent;
-
-    private FloatingActionButton sendBtn;
-    private EditText messageET;
-
-    private RecyclerView recyclerView;
-    private MessageAdapter messageAdapter;
-    private List<Message> messageList;
-
-    private ValueEventListener seenListener;
-    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(ActivityUsers.setTheme(this, initView()));
+        setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
-        context = this;
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        profile_image = toolbar.findViewById(R.id.barImage);
-        username = toolbar.findViewById(R.id.barTextView);
-
-        setPointer();
+        initializeObjects();
+        findDataOfSecondUser();
+        iniListeners();
+        seenMessage(secondUserIdFromIntent);
     }
 
     public View initView() {
         return LayoutInflater.from(this).inflate(R.layout.activity_chat_with_user, null, false);
     }
 
-    private void setPointer() {
+    private void initializeObjects() {
+        context = this;
+        Toolbar toolbar = findViewById(R.id.toolbar);
         sendBtn = findViewById(R.id.chatWithUserFAB);
-        messageET = findViewById(R.id.chatWithUserEditText);
+        message_et = findViewById(R.id.chatWithUserEditText);
+        recyclerView = findViewById(R.id.chatWithUserRecyclerView);
 
+        profile_image = toolbar.findViewById(R.id.barImage);
+        username = toolbar.findViewById(R.id.barTextView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
         linearLayoutManager.setStackFromEnd(true);
-
-        recyclerView = findViewById(R.id.chatWithUserRecyclerView);
 
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(context, messageList, "");
@@ -94,44 +88,33 @@ public class ChatWithUserActivity extends Activity {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         intent = getIntent();
-        userId = intent.getStringExtra("userId");
+        secondUserIdFromIntent = intent.getStringExtra("userId");
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(secondUserIdFromIntent);
+    }
 
+    private void iniListeners() {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String message = messageET.getText().toString();
-
-                if (message.isEmpty()) {
-                    Toast.makeText(context, "Empty message", Toast.LENGTH_SHORT).show();
-                } else {
-                    sendMessage(firebaseUser.getUid(), userId, message);
-                    messageET.setText("");
-                    InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
+                sendingMessage();
             }
         });
+    }
 
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
+    public void findDataOfSecondUser() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                //Looking for user data from firebase
                 MyUser myUser = dataSnapshot.getValue(MyUser.class);
-                username.setText(myUser.getUsername());
-                username.setTextColor(Color.WHITE);
-
-                if (myUser.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.drawable.ic_user_profile);
-                } else {
-                    Glide.with(getBaseContext()).load(myUser.getImageURL()).into(profile_image);
+                if (myUser.getId().equals(secondUserIdFromIntent)) {
+                    setDataOfSecondUser(myUser);
                 }
 
-                readMessages(firebaseUser.getUid(), userId, myUser.getImageURL());
+                initMessagesList(firebaseUser.getUid(), secondUserIdFromIntent);
             }
 
 
@@ -140,8 +123,64 @@ public class ChatWithUserActivity extends Activity {
 
             }
         });
+    }
 
-        seenMessage(userId);
+    private void setDataOfSecondUser(MyUser myUser) {
+        username.setText(myUser.getUsername());
+        username.setTextColor(Color.WHITE);
+        if (myUser.getImageURL().equals("default")) {
+            profile_image.setImageResource(R.drawable.ic_user_profile);
+        } else {
+            Glide.with(getBaseContext()).load(myUser.getImageURL()).into(profile_image);
+        }
+    }
+
+    //Get messages from firebase database
+    private void initMessagesList(final String myId, final String userId) {
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                messageList.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Message message = snapshot.getValue(Message.class);
+
+                    //Looking for messages of out two users
+                    if (message.getReceiver().equals(myId) && message.getSender().equals(userId)
+                            || message.getReceiver().equals(userId) && message.getSender().equals(myId)) {
+                        messageList.add(message);
+                    }
+
+                }
+
+                messageAdapter.notifyDataSetChanged();
+                if (recyclerView.getAdapter().getItemCount() > 1) {
+                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void sendingMessage() {
+        String message = message_et.getText().toString();
+
+        if (message.isEmpty()) {
+            Toast.makeText(context, "Empty message", Toast.LENGTH_SHORT).show();
+        } else {
+            sendMessage(firebaseUser.getUid(), secondUserIdFromIntent, message);
+            message_et.setText("");
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 
     //Push messages to firebase database
@@ -184,66 +223,6 @@ public class ChatWithUserActivity extends Activity {
 
     }
 
-    //Get messages from firebase database
-    private void readMessages(final String myId, final String userId, final String imageUrl) {
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                messageList.clear();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    Message chat = snapshot.getValue(Message.class);
-
-                    if (chat.getReceiver().equals(myId) && chat.getSender().equals(userId)
-                            || chat.getReceiver().equals(userId) && chat.getSender().equals(myId)) {
-                        messageList.add(chat);
-
-                    }
-
-                }
-
-                messageAdapter.notifyDataSetChanged();
-                if (recyclerView.getAdapter().getItemCount() > 1) {
-                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    //Check if current user online or offline
-    private void status(String status) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-
-        databaseReference.updateChildren(hashMap);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        status("online");
-        currentUser(userId);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        databaseReference.removeEventListener(seenListener);
-        status("offline");
-        currentUser("none");
-    }
-
     private void seenMessage(final String userid) {
         databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
         seenListener = databaseReference.addValueEventListener(new ValueEventListener() {
@@ -271,6 +250,31 @@ public class ChatWithUserActivity extends Activity {
         SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         editor.putString("currentuser", userId);
         editor.apply();
+    }
+
+    //Check if current user online or offline
+    private void status(String status) {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("status", status);
+
+        databaseReference.updateChildren(hashMap);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        status("online");
+        currentUser(secondUserIdFromIntent);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        databaseReference.removeEventListener(seenListener);
+        status("offline");
+        currentUser("none");
     }
 }
 
