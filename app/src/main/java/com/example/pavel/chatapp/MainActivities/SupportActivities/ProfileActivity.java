@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities;
+package com.example.pavel.chatapp.MainActivities.SupportActivities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -22,8 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
+import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;

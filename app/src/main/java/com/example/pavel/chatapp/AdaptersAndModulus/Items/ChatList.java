@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Adapter_Modul.Items;
+package com.example.pavel.chatapp.AdaptersAndModulus.Items;
 
 public class ChatList {
     public String id;

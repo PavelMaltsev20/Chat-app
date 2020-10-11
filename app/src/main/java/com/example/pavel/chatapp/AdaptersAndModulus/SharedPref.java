@@ -1,10 +1,9 @@
-package com.example.pavel.chatapp.Adapter_Modul;
+package com.example.pavel.chatapp.AdaptersAndModulus;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.example.pavel.chatapp.R;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class SharedPref {
 

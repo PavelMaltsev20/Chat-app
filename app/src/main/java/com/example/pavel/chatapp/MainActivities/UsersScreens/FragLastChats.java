@@ -11,11 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.pavel.chatapp.Adapter_Modul.Items.ChatList;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Adapter_Modul.Items.Token;
-import com.example.pavel.chatapp.Adapter_Modul.UserAdapter;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.ChatList;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
+import com.example.pavel.chatapp.AdaptersAndModulus.UserAdapter;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,8 +42,7 @@ public class FragLastChats extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_last_chats, container, false);
         initializeObjects(view);
-        initializeListeners();
-        updateToken(FirebaseInstanceId.getInstance().getToken());
+        getListOfLastChats();
 
         return view;
     }
@@ -54,12 +51,13 @@ public class FragLastChats extends Fragment {
         recyclerView = view.findViewById(R.id.conversationRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        usersList = new ArrayList<>();
         databaseReference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.getUid());
         progressBar = view.findViewById(R.id.fragLastChats_PB);
+        usersList = new ArrayList<>();
+        myUserList = new ArrayList<>();
     }
 
-    private void initializeListeners() {
+    private void getListOfLastChats() {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -69,9 +67,7 @@ public class FragLastChats extends Fragment {
                     ChatList chatlist = snapshot.getValue(ChatList.class);
                     usersList.add(chatlist);
                 }
-
                 checkIfListIsEmpty();
-
             }
 
             @Override
@@ -86,25 +82,27 @@ public class FragLastChats extends Fragment {
             Toast.makeText(getContext(), "You have not conversations with other users", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
         } else {
-            chatList();
+            getDataOfLastCommunicatedUsers();
         }
     }
 
     //Display users that user chatted with them
-    private void chatList() {
-        myUserList = new ArrayList<>();
+    private void getDataOfLastCommunicatedUsers() {
+
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 myUserList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
                     MyUser user = snapshot.getValue(MyUser.class);
                     for (ChatList chatlist : usersList) {
                         if (user.getId().equals(chatlist.getId())) {
                             myUserList.add(user);
                         }
                     }
+
                 }
                 userAdapter = new UserAdapter(getContext(), myUserList, true);
                 recyclerView.setAdapter(userAdapter);
@@ -118,13 +116,7 @@ public class FragLastChats extends Fragment {
         });
     }
 
-    private void updateToken(String token) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-        Token token1 = new Token(token);
-        reference.child(firebaseUser.getUid()).setValue(token1);
-    }
-
-    //Set status of current user in firebase
+    //Set status of current user in firebase (Online offline )
     private void status(String status) {
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         HashMap<String, Object> hashMap = new HashMap<>();

@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Adapter_Modul.Items;
+package com.example.pavel.chatapp.AdaptersAndModulus.Items;
 
 public class Message {
 
@@ -57,5 +57,16 @@ public class Message {
 
     public void setNotified(boolean notified) {
         isNotified = notified;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "sender='" + sender + '\'' +
+                ", receiver='" + receiver + '\'' +
+                ", message='" + message + '\'' +
+                ", isSeen=" + isSeen +
+                ", isNotified=" + isNotified +
+                '}';
     }
 }

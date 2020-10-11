@@ -1,14 +1,12 @@
-package com.example.pavel.chatapp.Adapter_Modul;
+package com.example.pavel.chatapp.AdaptersAndModulus;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -26,11 +24,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private FirebaseUser firebaseUser;
     private List<Message> messageList;
     private Context context;
-    private String imageUrl;
 
-    public MessageAdapter(Context context, List<Message> messageList, String imageUrl) {
+    public MessageAdapter(Context context, List<Message> messageList) {
         this.context = context;
-        this.imageUrl = imageUrl;
         this.messageList = messageList;
     }
 

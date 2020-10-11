@@ -1,6 +1,5 @@
 package com.example.pavel.chatapp.MainActivities.Login_Register;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,7 +15,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,16 +36,11 @@ public class FragRegister extends Fragment {
     private EditText username_et, mail_et, pass1_et, pass2_et;
     private Boolean currentUserExist;
     private Button confirm, cancel;
-    private Context context;
     private ProgressBar progressBar;
 
     private DatabaseReference databaseReference;
     private FirebaseUser firebaseUser;
     private FirebaseAuth mAuth;
-
-    public FragRegister(Context context) {
-        this.context = context;
-    }
 
     @Nullable
     @Override
@@ -155,7 +149,7 @@ public class FragRegister extends Fragment {
                                 }
                             });
                 } else {
-                    Toast.makeText(context, R.string.toast_reg_user_exist, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.toast_reg_user_exist, Toast.LENGTH_SHORT).show();
                     currentUserExist = true;
                 }
                 progressBar.setVisibility(View.INVISIBLE);
@@ -177,7 +171,7 @@ public class FragRegister extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     startChatActivity();
-                    Toast.makeText(context, username_et.getText().toString() + getString(R.string.toast_reg_welcome_to_chat), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), username_et.getText().toString() + getString(R.string.toast_reg_welcome_to_chat), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -188,7 +182,7 @@ public class FragRegister extends Fragment {
     }
 
     private void startChatActivity() {
-        Intent intent = new Intent(context, ActivityUsersContainer.class);
+        Intent intent = new Intent(getContext(), ActivityUsersContainer.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }

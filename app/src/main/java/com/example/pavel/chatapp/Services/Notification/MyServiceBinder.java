@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Services;
+package com.example.pavel.chatapp.Services.Notification;
 
 import android.os.Binder;
 

@@ -8,28 +8,30 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".Services.App"
+        android:name=".Services.Notification.App"
         android:allowBackup="true"
         android:icon="@drawable/chat_app"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/new_icon_for_label_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivities.Login_Register.ActivityLoginRegisterContainer"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivities.SettingsActivity" />
-        <activity android:name=".MainActivities.ProfileActivity" />
+        <activity android:name=".MainActivities.SupportActivities.NoConnection"/>
+        <activity android:name=".MainActivities.SupportActivities.SettingsActivity" />
+        <activity android:name=".MainActivities.SupportActivities.ProfileActivity" />
         <activity android:name=".MainActivities.ChatWithUserActivity" />
         <activity android:name=".MainActivities.UsersScreens.ActivityUsersContainer" />
-        <activity android:name=".Services.App" />
+        <activity android:name=".Services.Notification.App" />
 
-        <service android:name=".Services.NotificationService" />
+        <service android:name=".Services.Notification.NotificationService" />
     </application>
+
 </manifest>

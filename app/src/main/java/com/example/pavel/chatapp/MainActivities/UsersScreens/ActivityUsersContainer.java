@@ -3,7 +3,9 @@ package com.example.pavel.chatapp.MainActivities.UsersScreens;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -19,15 +21,17 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.example.pavel.chatapp.Adapter_Modul.FragmentAdapter;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
-import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
+import com.example.pavel.chatapp.AdaptersAndModulus.FragmentAdapter;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
+import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
 import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
-import com.example.pavel.chatapp.MainActivities.ProfileActivity;
+import com.example.pavel.chatapp.MainActivities.SupportActivities.ProfileActivity;
 import com.example.pavel.chatapp.R;
-import com.example.pavel.chatapp.Services.MyServiceBinder;
-import com.example.pavel.chatapp.Services.NotificationService;
-import com.example.pavel.chatapp.MainActivities.SettingsActivity;
+import com.example.pavel.chatapp.Services.ConnectionBroadcastReceiver;
+import com.example.pavel.chatapp.Services.Notification.MyServiceBinder;
+import com.example.pavel.chatapp.Services.Notification.NotificationService;
+import com.example.pavel.chatapp.MainActivities.SupportActivities.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,7 +45,6 @@ public class ActivityUsersContainer extends AppCompatActivity {
     private final String TAG = "ActivityUsersContainer";
     private DatabaseReference databaseReference;
     private FirebaseUser firebaseUser;
-    private SharedPref sharedPref;
     private FirebaseAuth mAuth;
     private Context context;
 
@@ -50,10 +53,10 @@ public class ActivityUsersContainer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
-        fragmentCreating();
+        initFragments();
         initializeObjects();
-        initializeReference();
         initializeServiceIntent();
+        initializeReference();
         setTitleWithUserName();
     }
 
@@ -73,11 +76,21 @@ public class ActivityUsersContainer extends AppCompatActivity {
         return LayoutInflater.from(this).inflate(R.layout.activity_users, null, false);
     }
 
+    //Part of creating chat fragments
+    private void initFragments() {
+        final ViewPager viewPager = findViewById(R.id.viewPagerChat);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+        viewPager.setAdapter(getUsersAdapter());
+    }
+
     private void initializeObjects() {
         context = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
-        sharedPref = new SharedPref(this);
+    }
+
+    private void initializeServiceIntent() {
+        serviceIntent = new Intent(context, NotificationService.class);
     }
 
     private void initializeReference() {
@@ -86,10 +99,6 @@ public class ActivityUsersContainer extends AppCompatActivity {
                     .getReference("Users")
                     .child(firebaseUser.getUid());
         }
-    }
-
-    private void initializeServiceIntent() {
-        serviceIntent = new Intent(context, NotificationService.class);
     }
 
     private void setTitleWithUserName() {
@@ -114,18 +123,18 @@ public class ActivityUsersContainer extends AppCompatActivity {
         return name;
     }
 
-    //Part of creating chat fragments
-    private void fragmentCreating() {
-        final ViewPager viewPager = findViewById(R.id.viewPagerChat);
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        viewPager.setAdapter(getUsersAdapter());
-    }
 
     private PagerAdapter getUsersAdapter() {
         FragmentAdapter fragmentAdapter = new FragmentAdapter(getSupportFragmentManager(), context);
         fragmentAdapter.addFragment(new FragLastChats(), "Last Chats");
         fragmentAdapter.addFragment(new FragSearchUsers(), "Users");
         return fragmentAdapter;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     //----------------------------Menu part ----------------------------------------
@@ -155,56 +164,69 @@ public class ActivityUsersContainer extends AppCompatActivity {
         return false;
     }
 
+    //----------------------------Service part (Notification, Broadcast receiver) ----------------------------------------
+    private ConnectionBroadcastReceiver receiver = new ConnectionBroadcastReceiver();
+
+    private Intent serviceIntent;
+
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        context.unbindService(serviceConnection);
-        finish();
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(receiver, filter);
     }
 
-    //----------------------------NotificationService part ----------------------------------------
-    private Intent serviceIntent;
-    private NotificationService myNotificationService;
 
     @Override
     protected void onResume() {
         super.onResume();
-        try {
-            context.unbindService(serviceConnection);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        try {
-            context.bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-        } catch (Exception e) {
-            Log.e(TAG, "bind service Exception: ", e);
-        }
+
     }
 
     @Override
-    public boolean bindService(Intent service, ServiceConnection conn, int flags) {
-        return super.bindService(service, conn, flags);
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(receiver);
+        createListenersForNewMessages();
+//        NotificationService notificationService = new NotificationService(context);
+//        Intent intent = new Intent(context, NotificationService.class);
+//        notificationService.onBind(intent);
     }
 
-    //Creating service connection
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        // method that runs when the service connected
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            myNotificationService = ((MyServiceBinder) binder).service;
-        }
+    private void createListenersForNewMessages() {
 
+        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
+                .child("Chats");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        // method that runs when the service disconnected
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Message message = snapshot.getValue(Message.class);
+                    if (message.getReceiver().equals(firebaseUser.getUid()) && message.isNotified()) {
+                        Log.i(TAG, "onDataChange: tester- "+message.getMessage());
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
 
 }
 

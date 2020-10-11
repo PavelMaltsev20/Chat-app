@@ -19,9 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.pavel.chatapp.Adapter_Modul.MessageAdapter;
-import com.example.pavel.chatapp.Adapter_Modul.Items.Message;
-import com.example.pavel.chatapp.Adapter_Modul.Items.MyUser;
+import com.example.pavel.chatapp.AdaptersAndModulus.MessageAdapter;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
+import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -63,7 +63,7 @@ public class ChatWithUserActivity extends Activity {
         initializeObjects();
         findDataOfSecondUser();
         iniListeners();
-        seenMessage(secondUserIdFromIntent);
+        //seenMessage(secondUserIdFromIntent);
     }
 
     public View initView() {
@@ -79,19 +79,27 @@ public class ChatWithUserActivity extends Activity {
 
         profile_image = toolbar.findViewById(R.id.barImage);
         username = toolbar.findViewById(R.id.barTextView);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), RecyclerView.VERTICAL, false);
-        linearLayoutManager.setStackFromEnd(true);
 
         messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(context, messageList, "");
-        recyclerView.setAdapter(messageAdapter);
-        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(getMessageAdapter());
+        recyclerView.setLayoutManager(getLinearLayout());
 
         intent = getIntent();
         secondUserIdFromIntent = intent.getStringExtra("userId");
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(secondUserIdFromIntent);
+    }
+
+    private RecyclerView.Adapter getMessageAdapter() {
+        messageAdapter = new MessageAdapter(context, messageList);
+        return messageAdapter;
+    }
+
+    private RecyclerView.LayoutManager getLinearLayout() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, RecyclerView.VERTICAL, false);
+        linearLayoutManager.setStackFromEnd(true);
+        return linearLayoutManager;
     }
 
     private void iniListeners() {
@@ -229,9 +237,9 @@ public class ChatWithUserActivity extends Activity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message chat = snapshot.getValue(Message.class);
+                    Message message = snapshot.getValue(Message.class);
 
-                    if (chat.getReceiver().equals(firebaseUser.getUid()) && chat.getSender().equals(userid)) {
+                    if (message.getReceiver().equals(firebaseUser.getUid()) && message.getSender().equals(userid)) {
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("isseen", true);
                         snapshot.getRef().updateChildren(hashMap);
@@ -272,9 +280,15 @@ public class ChatWithUserActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        databaseReference.removeEventListener(seenListener);
+        //databaseReference.removeEventListener(seenListener);
         status("offline");
         currentUser("none");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
 

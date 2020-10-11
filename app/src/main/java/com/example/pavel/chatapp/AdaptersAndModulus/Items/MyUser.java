@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.Adapter_Modul.Items;
+package com.example.pavel.chatapp.AdaptersAndModulus.Items;
 
 public class MyUser {
 
@@ -57,5 +57,16 @@ public class MyUser {
 
     public void setSearch(String search) {
         this.search = search;
+    }
+
+    @Override
+    public String toString() {
+        return "MyUser{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", imageURL='" + imageURL + '\'' +
+                ", status='" + status + '\'' +
+                ", search='" + search + '\'' +
+                '}';
     }
 }

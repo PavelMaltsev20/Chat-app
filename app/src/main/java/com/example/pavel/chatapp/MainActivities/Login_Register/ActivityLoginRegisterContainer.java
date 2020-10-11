@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.example.pavel.chatapp.Adapter_Modul.FragmentAdapter;
+import com.example.pavel.chatapp.AdaptersAndModulus.FragmentAdapter;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,8 +22,7 @@ public class ActivityLoginRegisterContainer extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (savedInstanceState != null)
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
         setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
         initializeObjects();
@@ -52,8 +51,8 @@ public class ActivityLoginRegisterContainer extends AppCompatActivity {
         ViewPager viewPager = findViewById(R.id.viewPagerLoginRegister);
         FragmentAdapter viewPagerAdapter = new FragmentAdapter(getSupportFragmentManager(), context);
 
-        viewPagerAdapter.addFragment(new FragLogin(context), "Login");
-        viewPagerAdapter.addFragment(new FragRegister(context), "Register");
+        viewPagerAdapter.addFragment(new FragLogin(), "Login");
+        viewPagerAdapter.addFragment(new FragRegister(), "Register");
 
         viewPager.setAdapter(viewPagerAdapter);
     }

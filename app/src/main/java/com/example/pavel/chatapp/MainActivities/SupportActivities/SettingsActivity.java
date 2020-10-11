@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities;
+package com.example.pavel.chatapp.MainActivities.SupportActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import com.example.pavel.chatapp.Adapter_Modul.SharedPref;
+import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
