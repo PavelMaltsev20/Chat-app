@@ -254,27 +254,11 @@ public class ChatWithUserActivity extends Activity {
         });
     }
 
-    private void currentUser(String userId) {
-        SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-        editor.putString("currentuser", userId);
-        editor.apply();
-    }
-
-    //Check if current user online or offline
-    private void status(String status) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-
-        databaseReference.updateChildren(hashMap);
-    }
-
+    //----------------------------Service part and user status updater(Online offline) ----------------------------------------
     @Override
     public void onResume() {
         super.onResume();
         status("online");
-        currentUser(secondUserIdFromIntent);
     }
 
     @Override
@@ -282,14 +266,27 @@ public class ChatWithUserActivity extends Activity {
         super.onPause();
         //databaseReference.removeEventListener(seenListener);
         status("offline");
-        currentUser("none");
     }
 
+    //Set status of current user in firebase (Online offline )
+    public static void status(String status) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("status", status);
+        databaseReference.updateChildren(hashMap);
+    }
+    
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
 }
 
 

@@ -13,6 +13,8 @@ import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
+import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private Switch mySwitch;
@@ -72,6 +74,18 @@ public class SettingsActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        status("online"); //Static method from 'ChatWithUserActivity'
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        status("offline");//Static method from 'ChatWithUserActivity'
     }
 
 

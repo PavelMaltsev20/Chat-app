@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
-public class NoConnection extends AppCompatActivity {
+public class NoConnectionNotifier extends AppCompatActivity {
 
     private Button reload_btn;
 

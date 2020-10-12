@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.ChatList;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.AdaptersAndModulus.UserAdapter;
@@ -27,6 +28,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
 
 public class FragLastChats extends Fragment {
 
@@ -114,25 +117,5 @@ public class FragLastChats extends Fragment {
                 progressBar.setVisibility(View.GONE);
             }
         });
-    }
-
-    //Set status of current user in firebase (Online offline )
-    private void status(String status) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-        databaseReference.updateChildren(hashMap);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        status("online");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        status("offline");
     }
 }

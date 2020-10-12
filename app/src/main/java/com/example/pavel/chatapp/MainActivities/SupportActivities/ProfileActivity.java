@@ -46,6 +46,8 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.HashMap;
 
+import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
+
 public class
 ProfileActivity extends AppCompatActivity {
 
@@ -171,6 +173,18 @@ ProfileActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        status("online"); //Static method from 'ChatWithUserActivity'
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        status("offline");//Static method from 'ChatWithUserActivity'
     }
 
     //----------------------------------------Part of updating user data in firebase----------------------------------------

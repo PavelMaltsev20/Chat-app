@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/itemUser"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemUser"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/standard_margin"
@@ -35,27 +35,21 @@
         app:layout_constraintStart_toEndOf="@+id/userItem_IV_profileImage"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/userItem_IV_img_on"
+    <ImageView
+        android:id="@+id/userItem_IV_statusOnline"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:src="@mipmap/ic_launcher"
-        android:visibility="gone"
-        app:civ_border_color="@color/onlineStatus"
-        app:civ_border_width="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/userItem_IV_profileImage"
+        android:background="@drawable/status_online"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/userItem_IV_statusOffline" />
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/userItem_IV_img_off"
+    <ImageView
+        android:id="@+id/userItem_IV_statusOffline"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:src="@mipmap/ic_launcher"
-        android:visibility="gone"
-        app:civ_border_color="@color/offlineStatus"
-        app:civ_border_width="10dp"
-        app:layout_constraintEnd_toStartOf="@+id/userItem_IV_profileImage"
+        android:background="@drawable/status_offline"
+        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

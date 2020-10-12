@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivities.SupportActivities.NoConnection"/>
+        <activity android:name=".MainActivities.SupportActivities.NoConnectionNotifier" />
         <activity android:name=".MainActivities.SupportActivities.SettingsActivity" />
         <activity android:name=".MainActivities.SupportActivities.ProfileActivity" />
         <activity android:name=".MainActivities.ChatWithUserActivity" />

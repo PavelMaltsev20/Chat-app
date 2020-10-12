@@ -1,14 +1,10 @@
 package com.example.pavel.chatapp.MainActivities.UsersScreens;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,15 +18,12 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.example.pavel.chatapp.AdaptersAndModulus.FragmentAdapter;
-import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
 import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
 import com.example.pavel.chatapp.MainActivities.SupportActivities.ProfileActivity;
 import com.example.pavel.chatapp.R;
 import com.example.pavel.chatapp.Services.ConnectionBroadcastReceiver;
-import com.example.pavel.chatapp.Services.Notification.MyServiceBinder;
-import com.example.pavel.chatapp.Services.Notification.NotificationService;
 import com.example.pavel.chatapp.MainActivities.SupportActivities.SettingsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,6 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
 
 public class ActivityUsersContainer extends AppCompatActivity {
 
@@ -55,7 +50,6 @@ public class ActivityUsersContainer extends AppCompatActivity {
 
         initFragments();
         initializeObjects();
-        initializeServiceIntent();
         initializeReference();
         setTitleWithUserName();
     }
@@ -87,10 +81,6 @@ public class ActivityUsersContainer extends AppCompatActivity {
         context = this;
         mAuth = FirebaseAuth.getInstance();
         firebaseUser = mAuth.getCurrentUser();
-    }
-
-    private void initializeServiceIntent() {
-        serviceIntent = new Intent(context, NotificationService.class);
     }
 
     private void initializeReference() {
@@ -164,67 +154,40 @@ public class ActivityUsersContainer extends AppCompatActivity {
         return false;
     }
 
-    //----------------------------Service part (Notification, Broadcast receiver) ----------------------------------------
+    //----------------------------Service part (Broadcast receiver) ----------------------------------------
     private ConnectionBroadcastReceiver receiver = new ConnectionBroadcastReceiver();
 
-    private Intent serviceIntent;
+    @Override
+    public void onResume() {
+        super.onResume();
+        status("online"); //Static method from 'ChatWithUserActivity'
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        status("offline");//Static method from 'ChatWithUserActivity'
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(receiver, filter);
-    }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        unregisterReceiver(receiver);
-        createListenersForNewMessages();
-//        NotificationService notificationService = new NotificationService(context);
-//        Intent intent = new Intent(context, NotificationService.class);
-//        notificationService.onBind(intent);
-    }
-
-    private void createListenersForNewMessages() {
-
-        final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-                .child("Chats");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message message = snapshot.getValue(Message.class);
-                    if (message.getReceiver().equals(firebaseUser.getUid()) && message.isNotified()) {
-                        Log.i(TAG, "onDataChange: tester- "+message.getMessage());
-                    }
-                }
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        startBroadcastReceiver();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        stopBroadcastReceiver();
+    }
+
+    private void startBroadcastReceiver() {
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(receiver, filter);
+    }
+
+    private void stopBroadcastReceiver() {
+        unregisterReceiver(receiver);
     }
 
 

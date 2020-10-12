@@ -5,11 +5,21 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class App extends Application {
 
@@ -21,6 +31,7 @@ public class App extends Application {
         super.onCreate();
 
         initNotifications();
+        checkMethod();
     }
 
     private void initNotifications() {
@@ -37,5 +48,38 @@ public class App extends Application {
             manager.createNotificationChannel(channel_2);
         }
 
+    }
+
+    private void checkMethod() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
+                .child("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("status");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue().toString().equals("offline")) {
+                    startNotificationService();
+                } else {
+                    stopNotificationService();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void startNotificationService() {
+        Intent serviceIntent = new Intent(this, NotificationService.class);
+        startService(serviceIntent);
+    }
+
+    private void stopNotificationService() {
+        Intent serviceIntent = new Intent(this, NotificationService.class);
+        stopService(serviceIntent);
     }
 }

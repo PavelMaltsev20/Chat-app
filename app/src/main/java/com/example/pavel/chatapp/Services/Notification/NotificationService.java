@@ -1,5 +1,6 @@
 package com.example.pavel.chatapp.Services.Notification;
 
+import android.app.IntentService;
 import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
@@ -30,30 +32,44 @@ import androidx.core.app.NotificationManagerCompat;
 
 import java.util.HashMap;
 
-public class NotificationService extends Service {
+public class NotificationService extends IntentService {
 
+    /*
+     * Notification background service
+     */
+    private final String TAG = "NotificationService";
     private DatabaseReference firebaseDatabase;
-    private boolean isDelivered = false;
     private final int NOTIFY_ID = 16;
     private MyUser secondUser;
-    private Context context;
 
-    public NotificationService(Context context) {
-        this.context = context;
+    public NotificationService() {
+        super("NotificationService");
     }
 
-    @Nullable
     @Override
-    public IBinder onBind(Intent intent) {
+    public void onCreate() {
+        super.onCreate();
+        Log.i(TAG, "Notification service created.");
         checkIfUserHasNotifiedAboutMessage();
-        MyServiceBinder binder = new MyServiceBinder();
-        binder.service = this;
-        return binder;
     }
 
     @Override
-    public boolean onUnbind(Intent intent) {
-        return super.onUnbind(intent);
+    protected void onHandleIntent(@Nullable Intent intent) {
+        for (int i = 0; i < 10; i += 1) {
+            SystemClock.sleep(1000);
+            if (i%5 == 0 ) {
+                i = 0;
+                checkIfUserHasNotifiedAboutMessage();
+            }
+        }
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        setIntentRedelivery(true);
+        Log.i(TAG, "Notification service destroyed.");
     }
 
     private void checkIfUserHasNotifiedAboutMessage() {
@@ -100,6 +116,7 @@ public class NotificationService extends Service {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                //Initialize second user and getting data of message
                 secondUser = dataSnapshot.getValue(MyUser.class);
                 createNotificationWithAction(NOTIFY_ID, message.getMessage());
 
@@ -114,10 +131,10 @@ public class NotificationService extends Service {
     //Creating new notification
     private void createNotificationWithAction(int nId, String body) {
 
-        NotificationManagerCompat manager = NotificationManagerCompat.from(context);//Creating notification manager
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, initRequestId(), openActivityWithCurrentUser(), initFlag());// On notification click will open chat with sender of the message
+        NotificationManagerCompat manager = NotificationManagerCompat.from(this);//Creating notification manager
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, initRequestId(), openActivityWithCurrentUser(), initFlag());// On notification click will open chat with sender of the message
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, App.CHANEL_ID_1);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, App.CHANEL_ID_1);
         notificationBuilder = setDataToNotification(notificationBuilder, body, pendingIntent);
 
         manager.notify(nId, notificationBuilder.build());
@@ -136,7 +153,7 @@ public class NotificationService extends Service {
     }
 
     private Intent openActivityWithCurrentUser() {
-        Intent intent = new Intent(context, ChatWithUserActivity.class);
+        Intent intent = new Intent(this, ChatWithUserActivity.class);
         intent.putExtra("userId", secondUser.getId());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         return intent;
