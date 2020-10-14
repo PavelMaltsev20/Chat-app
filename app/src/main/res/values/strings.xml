@@ -40,4 +40,6 @@
     <string name="profile_tv_name">Name</string>
     <string name="profile_tv_pass">Password</string>
     <string name="profile_change_pass">Click here to change</string>
+    <string name="shared_pref_notification_name">notification</string>
+    <string name="shared_pref_notification_value">runNotification</string>
 </resources>

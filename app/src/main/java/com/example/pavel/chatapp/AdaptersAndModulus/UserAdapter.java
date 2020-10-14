@@ -2,6 +2,7 @@ package com.example.pavel.chatapp.AdaptersAndModulus;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,25 +22,27 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
+    private boolean isLastChatsFrag;
     private List<MyUser> myUserList;
     private String lastMessage;
-    private Context context;
-    private boolean isChat;
     private ViewHolder holder;
+    private Context context;
     private MyUser myUser;
 
-    public UserAdapter(Context context, List<MyUser> myUserList, boolean isChat) {
+    public UserAdapter(Context context, List<MyUser> myUserList, boolean isLastChatsFrag) {
         this.context = context;
-        this.isChat = isChat;
+        this.isLastChatsFrag = isLastChatsFrag;
         this.myUserList = myUserList;
     }
 
@@ -68,9 +71,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         setUserName();
         setUserProfileImage();
-        checkIfThoseUsersHaveConversation();
-        setCurrentStatus();
-        setOnItemClickListener(myUserList.get(position));
+        setStatusOfCurrentUser();
+        setLasUserMessage();
+        setOnUserItemClickListener(myUserList.get(position));
     }
 
     private void setUserName() {
@@ -87,101 +90,111 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         }
     }
 
-    private void checkIfThoseUsersHaveConversation() {
-        if (isChat) {
-            setListenerForLastMessage(myUser.getId(), holder.lastMessage_tv);
-        } else {
-            holder.lastMessage_tv.setVisibility(View.GONE);
+    private void setStatusOfCurrentUser() {
+        //Check if it 'Last Chats' fragment
+        if (isLastChatsFrag) {
+            holder.userStatus_iv.setVisibility(View.VISIBLE);
+            setStatusListenerOfCurrentItem(myUser, holder.userStatus_iv);
+        } else {//If it not 'Last chats' frag, so it 'Search frag'
+            holder.userStatus_iv.setVisibility(View.GONE);
         }
     }
 
-    private void setListenerForLastMessage(final String userid, final TextView last_msg) {
-        lastMessage = "default";
-        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-
-        if (firebaseUser != null) {
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Message message = snapshot.getValue(Message.class);
-                        //Check if this message belongs to our user and to whoever he is talking
-                        if (message.getReceiver().equals(firebaseUser.getUid()) && message.getSender().equals(userid) ||
-                                message.getReceiver().equals(userid) && message.getSender().equals(firebaseUser.getUid())) {
-                            lastMessage = message.getMessage();
-                        }
-                    }
-
-                    switch (lastMessage) {
-                        case "default":
-                            last_msg.setText("No message");
-                            break;
-
-                        default:
-                            last_msg.setText(lastMessage);
-                            break;
-                    }
-                    lastMessage = "default";
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
-    }
-
-    private void setCurrentStatus(){
-        if (isChat) {
-            if (myUser.getStatus().equals("online")) {
-                holder.statusOnline_iv.setVisibility(View.VISIBLE);
-                holder.statusOfflone_iv.setVisibility(View.GONE);
-            } else {
-                holder.statusOnline_iv.setVisibility(View.GONE);
-                holder.statusOfflone_iv.setVisibility(View.VISIBLE);
-            }
-        } else {
-            holder.statusOnline_iv.setVisibility(View.GONE);
-            holder.statusOfflone_iv.setVisibility(View.GONE);
-        }
-
-        setListenerForStatusChanges();
-    }
-
-    private void setListenerForStatusChanges() {
+    private void setStatusListenerOfCurrentItem(final MyUser myUser, final ImageView userStatus_iv) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Users");
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String currentStatus = dataSnapshot.child(myUser.getId()).child("status").getValue().toString();
-                if(!currentStatus.equals(myUser.getStatus())){
-                    myUser.setStatus(currentStatus);
-                    if (myUser.getStatus().equals("online")) {
-                        holder.statusOnline_iv.setVisibility(View.VISIBLE);
-                        holder.statusOfflone_iv.setVisibility(View.GONE);
-                    } else {
-                        holder.statusOnline_iv.setVisibility(View.GONE);
-                        holder.statusOfflone_iv.setVisibility(View.VISIBLE);
-                    }
 
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    if (snapshot.child("id").getValue().toString().equals(myUser.getId())) {
+                        String tempStatus = snapshot.child("status").getValue().toString();
+                        if (!tempStatus.equals(myUser.getStatus())) {
+                            myUser.setStatus(tempStatus);
+                        }
+
+                        if (myUser.getStatus().equals("online")) {
+                            userStatus_iv.setBackground(ContextCompat.getDrawable(context, R.drawable.status_online));
+                        } else {
+                            userStatus_iv.setBackground(ContextCompat.getDrawable(context, R.drawable.status_offline));
+                        }
+                    }
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
     }
 
-    private void setOnItemClickListener(final MyUser chatWithThisUser) {
+    private void setLasUserMessage() {
+        if (isLastChatsFrag) {
+            holder.newMessage_iv.setVisibility(View.GONE);
+            setMessageListenerOfCurrentItem(myUser.getId(), holder.lastMessage_tv,  holder.newMessage_iv);
+        } else {
+            holder.lastMessage_tv.setVisibility(View.GONE);
+            holder.newMessage_iv.setVisibility(View.GONE);
+        }
+    }
+
+    private void setMessageListenerOfCurrentItem(final String userid, final TextView last_msg, final ImageView newMessage_iv) {
+        lastMessage = "default";
+        final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Message message = snapshot.getValue(Message.class);
+                    //Check if this message belongs to our user
+                    if (message.getReceiver().equals(firebaseUser.getUid()) && message.getSender().equals(userid) ||
+                            message.getReceiver().equals(userid) && message.getSender().equals(firebaseUser.getUid())) {
+
+                        lastMessage = message.getMessage();
+                        message.setSeen(Boolean.parseBoolean(snapshot.child("isSeen").getValue().toString()));
+
+                        notifyUseAboutNewMessage(message,newMessage_iv);
+
+                    }
+                }
+
+                switch (lastMessage) {
+                    case "default":
+                        last_msg.setText("No message");
+                        break;
+
+                    default:
+                        last_msg.setText(lastMessage);
+                        break;
+                }
+                lastMessage = "default";
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+    }
+
+    private void notifyUseAboutNewMessage(Message message, ImageView newMessage_iv) {
+        if(!message.getSeen() && message.getReceiver().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            newMessage_iv.setVisibility(View.VISIBLE);
+        }else{
+            newMessage_iv.setVisibility(View.GONE);
+        }
+    }
+
+    private void setOnUserItemClickListener(final MyUser chatWithThisUser) {
         holder.parent_cl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,7 +214,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         private ConstraintLayout parent_cl;
         private TextView username_tv, lastMessage_tv;
-        private ImageView profileImage_iv, statusOnline_iv, statusOfflone_iv;
+        private ImageView profileImage_iv, userStatus_iv, newMessage_iv;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -210,8 +223,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             lastMessage_tv = itemView.findViewById(R.id.userItem_TV_last_msg);
             profileImage_iv = itemView.findViewById(R.id.userItem_IV_profileImage);
 
-            statusOnline_iv = itemView.findViewById(R.id.userItem_IV_statusOnline);
-            statusOfflone_iv = itemView.findViewById(R.id.userItem_IV_statusOffline);
+            userStatus_iv = itemView.findViewById(R.id.userItem_IV_userStatus);
+            newMessage_iv = itemView.findViewById(R.id.userItem_IV_newMessage);
         }
     }
 }

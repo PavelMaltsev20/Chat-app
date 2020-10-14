@@ -1,14 +1,9 @@
 package com.example.pavel.chatapp.Services.Notification;
 
 import android.app.IntentService;
-import android.app.NotificationChannel;
 import android.app.PendingIntent;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Build;
-import android.app.Service;
 import android.content.Intent;
-import android.os.IBinder;
+import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -26,11 +21,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import java.util.HashMap;
+
+import static com.example.pavel.chatapp.Services.Notification.App.CHANNEL_ID_1;
 
 public class NotificationService extends IntentService {
 
@@ -38,7 +34,8 @@ public class NotificationService extends IntentService {
      * Notification background service
      */
     private final String TAG = "NotificationService";
-    private DatabaseReference firebaseDatabase;
+    private DatabaseReference chatsDatabase, userDatabase;
+    private ValueEventListener notificationEventListener, userEventListener;
     private final int NOTIFY_ID = 16;
     private MyUser secondUser;
 
@@ -49,18 +46,16 @@ public class NotificationService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i(TAG, "Notification service created.");
-        checkIfUserHasNotifiedAboutMessage();
+        Log.i(TAG, "Notification service created, channel: " + CHANNEL_ID_1);
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        for (int i = 0; i < 10; i += 1) {
+        checkIfUserHasNotifiedAboutMessage();
+
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_pref_notification_name), 0); //Service will wait for new notification while user offline
+        while (sharedPref.getBoolean(getString(R.string.shared_pref_notification_value), false)) {
             SystemClock.sleep(1000);
-            if (i%5 == 0 ) {
-                i = 0;
-                checkIfUserHasNotifiedAboutMessage();
-            }
         }
 
     }
@@ -68,18 +63,21 @@ public class NotificationService extends IntentService {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        setIntentRedelivery(true);
+        if (notificationEventListener != null)
+            chatsDatabase.removeEventListener(notificationEventListener);
+        if (userEventListener != null)
+            userDatabase.removeEventListener(userEventListener);
         Log.i(TAG, "Notification service destroyed.");
     }
 
+    //------------------------------------------ Part of getting data for notification ------------------------------------------
     private void checkIfUserHasNotifiedAboutMessage() {
         final FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
         if (currentUser != null) {
 
-            firebaseDatabase = FirebaseDatabase.getInstance().getReference().child("Chats");
+            chatsDatabase = FirebaseDatabase.getInstance().getReference().child("Chats");
 
-            firebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            notificationEventListener = chatsDatabase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
@@ -88,7 +86,7 @@ public class NotificationService extends IntentService {
 
                         if (message.getReceiver().equals(currentUser.getUid())) {//Check if current message belong to current user
                             String firebaseValue = snapshot.child("isNotified").getValue().toString();
-                            if (firebaseValue.equals("false")) {//CCheck if user was notified about this message
+                            if (firebaseValue.equals("false") && !message.isNotified()) {//CCheck if user was notified about this message
                                 HashMap<String, Object> hashMap = new HashMap<>();
                                 hashMap.put("isNotified", true);
                                 snapshot.getRef().updateChildren(hashMap);
@@ -108,17 +106,17 @@ public class NotificationService extends IntentService {
 
     private void getDataOfCurrentMessage(final Message message) {
 
-        firebaseDatabase = FirebaseDatabase.getInstance().getReference()
+        userDatabase = FirebaseDatabase.getInstance().getReference()
                 .child("Users")
                 .child(message.getSender());
 
-        firebaseDatabase.addValueEventListener(new ValueEventListener() {
+        userEventListener = userDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //Initialize second user and getting data of message
                 secondUser = dataSnapshot.getValue(MyUser.class);
-                createNotificationWithAction(NOTIFY_ID, message.getMessage());
+                createNotificationWithAction(message.getMessage());
 
             }
 
@@ -128,28 +126,20 @@ public class NotificationService extends IntentService {
         });
     }
 
-    //Creating new notification
-    private void createNotificationWithAction(int nId, String body) {
+    //------------------------------------------ Part of notification's configuration ------------------------------------------
+    private void createNotificationWithAction(String body) {
 
         NotificationManagerCompat manager = NotificationManagerCompat.from(this);//Creating notification manager
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, initRequestId(), openActivityWithCurrentUser(), initFlag());// On notification click will open chat with sender of the message
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, initRequestId(), openActivityWithCurrentUser(), initFlag());// On notification click will open chat with 'sender' of this the message
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, App.CHANEL_ID_1);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, CHANNEL_ID_1);
         notificationBuilder = setDataToNotification(notificationBuilder, body, pendingIntent);
 
-        manager.notify(nId, notificationBuilder.build());
+        manager.notify(NOTIFY_ID, notificationBuilder.build());
     }
 
-    //------------------------------------------Part of notification's configuration ---------------------------------------------------
-    //TODO add current method to notification manager
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private NotificationChannel setConfigurationOfNotification(NotificationChannel notificationChannel) {
-        notificationChannel.setDescription("sending notifications");
-        notificationChannel.enableLights(true);
-        notificationChannel.setLightColor(Color.BLUE);
-        notificationChannel.enableVibration(true);
-        notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
-        return null;
+    private int initRequestId() {
+        return (int) System.currentTimeMillis() / 1000;
     }
 
     private Intent openActivityWithCurrentUser() {
@@ -159,17 +149,13 @@ public class NotificationService extends IntentService {
         return intent;
     }
 
-    private int initRequestId() {
-        return (int) System.currentTimeMillis() / 1000;
-    }
-
     private int initFlag() {
         return PendingIntent.FLAG_CANCEL_CURRENT;
     }
 
-    private NotificationCompat.Builder setDataToNotification(NotificationCompat.Builder notificationBuilder, String body, PendingIntent pendingIntent) {
+    private NotificationCompat.Builder setDataToNotification(NotificationCompat.Builder notificationBuilder, String message, PendingIntent pendingIntent) {
         notificationBuilder.setContentTitle(secondUser.getUsername())
-                .setContentText(body)
+                .setContentText(message)
                 .setSmallIcon(R.drawable.message_small_icon)
                 .setTicker("New message")
                 .setContentIntent(pendingIntent)

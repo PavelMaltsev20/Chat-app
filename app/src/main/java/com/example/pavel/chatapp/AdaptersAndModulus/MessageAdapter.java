@@ -52,7 +52,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     private void notifyUserAboutStatusOfMessage(int position, ViewHolder holder, Message message) {
         if (position == messageList.size() - 1) {
-            if (message.isSeen()) {
+            if (message.getSeen()) {
                 holder.notifyIfMessageIsSeen.setText("Seen");
             } else {
                 holder.notifyIfMessageIsSeen.setText("Delivered");

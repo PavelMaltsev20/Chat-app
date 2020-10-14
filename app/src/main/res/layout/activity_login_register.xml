@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivities.Login_Register.ActivityLoginRegisterContainer"
+    tools:context=".MainActivities.Frag_Login_Register.ActivityLoginRegisterContainer"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     android:background="@drawable/app_background_green"
     >

@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities.Login_Register;
+package com.example.pavel.chatapp.MainActivities.Frag_Login_Register;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
 import com.example.pavel.chatapp.MainActivities.SupportActivities.ProfileActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -79,6 +79,7 @@ public class FragLogin extends Fragment {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
+                        deleteDataFromEditText();
                         progressBar.setVisibility(View.GONE);
                         startMainActivity();
                     } else {
@@ -93,6 +94,11 @@ public class FragLogin extends Fragment {
 
     private boolean checkIfFieldsIsNotEmpty() {
         return email_et.getText().toString().isEmpty() || pass_et.getText().toString().isEmpty();
+    }
+
+    private void deleteDataFromEditText() {
+        email_et.setText("");
+        pass_et.setText("");
     }
 
     private void initializeObjects() {
@@ -112,6 +118,7 @@ public class FragLogin extends Fragment {
 
     private void startMainActivity() {
         Intent intent = new Intent(getView().getContext(), ActivityUsersContainer.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_TASK_ON_HOME);
         startActivity(intent);
         Toast.makeText(getView().getContext(), "Welcome", Toast.LENGTH_SHORT).show();
     }

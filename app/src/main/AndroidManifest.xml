@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivities.Login_Register.ActivityLoginRegisterContainer"
+            android:name=".MainActivities.Frag_Login_Register.ActivityLoginRegisterContainer"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,10 +28,18 @@
         <activity android:name=".MainActivities.SupportActivities.SettingsActivity" />
         <activity android:name=".MainActivities.SupportActivities.ProfileActivity" />
         <activity android:name=".MainActivities.ChatWithUserActivity" />
-        <activity android:name=".MainActivities.UsersScreens.ActivityUsersContainer" />
+        <activity android:name=".MainActivities.Frag_User_Lists.ActivityUsersContainer" />
         <activity android:name=".Services.Notification.App" />
 
         <service android:name=".Services.Notification.NotificationService" />
+
+        <receiver android:name=".Services.ConnectionBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.INPUT_METHOD_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

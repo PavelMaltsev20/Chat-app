@@ -2,13 +2,12 @@ package com.example.pavel.chatapp.MainActivities.SupportActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
 public class NoConnectionNotifier extends AppCompatActivity {

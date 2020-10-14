@@ -1,6 +1,7 @@
 package com.example.pavel.chatapp.MainActivities;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,8 +24,9 @@ import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.AdaptersAndModulus.MessageAdapter;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
+import com.example.pavel.chatapp.Services.Notification.NotificationService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,21 +42,37 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer.status;
+
+
 public class ChatWithUserActivity extends Activity {
 
+    public static final String TAG = "ChatWithUserActivity";
+    private Context context;
+
+    //Firebase objects
+    private ValueEventListener isSeenEventListener;
     private DatabaseReference databaseReference;
-    private ValueEventListener seenListener;
+    private DatabaseReference isSeenReference;
+    private FirebaseUser firebaseUser;
+
+    //Helpful objects
+    private String currentUserId, secondUserId;
+    private Intent intentWithSecondUserId;
+
+    //Objects from main activity
     private CircleImageView profile_image;
-    private MessageAdapter messageAdapter;
     private FloatingActionButton sendBtn;
     private RecyclerView recyclerView;
-    private List<Message> messageList;
-    private FirebaseUser firebaseUser;
     private EditText message_et;
-    private String secondUserIdFromIntent;
     private TextView username;
-    private Context context;
-    private Intent intent;
+    private List<Message> messageList;
+    private MessageAdapter messageAdapter;
+    
+    //Notifications objects
+    private Intent serviceIntent;
+    private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +80,17 @@ public class ChatWithUserActivity extends Activity {
         setContentView(ActivityUsersContainer.setTheme(this, initView()));
 
         initializeObjects();
+        initObjectsForNotifications();
         findDataOfSecondUser();
         iniListeners();
-        //seenMessage(secondUserIdFromIntent);
+        checkIfCurrentUserSeenMessage();
+    }
+
+    private void initObjectsForNotifications() {
+        //Intent and sharedPref for create notification class
+        serviceIntent = new Intent(context, NotificationService.class);
+        sharedPref = getSharedPreferences(getString(R.string.shared_pref_notification_name), 0);
+        editor = sharedPref.edit();
     }
 
     public View initView() {
@@ -72,23 +99,26 @@ public class ChatWithUserActivity extends Activity {
 
     private void initializeObjects() {
         context = this;
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        sendBtn = findViewById(R.id.chatWithUserFAB);
-        message_et = findViewById(R.id.chatWithUserEditText);
-        recyclerView = findViewById(R.id.chatWithUserRecyclerView);
 
+        //Toolbar with main info about second user
+        Toolbar toolbar = findViewById(R.id.toolbar);
         profile_image = toolbar.findViewById(R.id.barImage);
         username = toolbar.findViewById(R.id.barTextView);
 
+        recyclerView = findViewById(R.id.chatWithUserRecyclerView);
+        message_et = findViewById(R.id.chatWithUserEditText);
+        sendBtn = findViewById(R.id.chatWithUserFAB);
+
+        //init recycle view for messages
         messageList = new ArrayList<>();
         recyclerView.setAdapter(getMessageAdapter());
         recyclerView.setLayoutManager(getLinearLayout());
 
-        intent = getIntent();
-        secondUserIdFromIntent = intent.getStringExtra("userId");
-
+        //Get ids of two user
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(secondUserIdFromIntent);
+        currentUserId = firebaseUser.getUid();
+        intentWithSecondUserId = getIntent();
+        secondUserId = intentWithSecondUserId.getStringExtra("userId");
     }
 
     private RecyclerView.Adapter getMessageAdapter() {
@@ -106,23 +136,25 @@ public class ChatWithUserActivity extends Activity {
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendingMessage();
+                checkIfMessageIsEmpty();
             }
         });
     }
 
+    //---------------------------------------- Set data of second user to toolbar ----------------------------------------
     public void findDataOfSecondUser() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(secondUserId);
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //Looking for user data from firebase
                 MyUser myUser = dataSnapshot.getValue(MyUser.class);
-                if (myUser.getId().equals(secondUserIdFromIntent)) {
+                if (myUser.getId().equals(secondUserId)) {
                     setDataOfSecondUser(myUser);
                 }
 
-                initMessagesList(firebaseUser.getUid(), secondUserIdFromIntent);
+                initMessagesList();
             }
 
 
@@ -143,8 +175,8 @@ public class ChatWithUserActivity extends Activity {
         }
     }
 
-    //Get messages from firebase database
-    private void initMessagesList(final String myId, final String userId) {
+    //---------------------------------------- Get messages from firebase database----------------------------------------
+    private void initMessagesList() {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -158,11 +190,11 @@ public class ChatWithUserActivity extends Activity {
                     Message message = snapshot.getValue(Message.class);
 
                     //Looking for messages of out two users
-                    if (message.getReceiver().equals(myId) && message.getSender().equals(userId)
-                            || message.getReceiver().equals(userId) && message.getSender().equals(myId)) {
-                        messageList.add(message);
-                    }
+                    if (checkIfMessageBelongToCurrentUser(message)) {
 
+                        messageList.add(message);
+
+                    }
                 }
 
                 messageAdapter.notifyDataSetChanged();
@@ -178,13 +210,19 @@ public class ChatWithUserActivity extends Activity {
         });
     }
 
-    private void sendingMessage() {
+    private boolean checkIfMessageBelongToCurrentUser(Message message) {
+        return message.getReceiver().equals(currentUserId) && message.getSender().equals(secondUserId)
+                || message.getReceiver().equals(secondUserId) && message.getSender().equals(currentUserId);
+    }
+
+    //---------------------------------------- Save message in firebase --------------------------------------------------
+    private void checkIfMessageIsEmpty() {
         String message = message_et.getText().toString();
 
         if (message.isEmpty()) {
             Toast.makeText(context, "Empty message", Toast.LENGTH_SHORT).show();
         } else {
-            sendMessage(firebaseUser.getUid(), secondUserIdFromIntent, message);
+            sendMessage(firebaseUser.getUid(), secondUserId, message);
             message_et.setText("");
             InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
@@ -200,7 +238,7 @@ public class ChatWithUserActivity extends Activity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", userId);
         hashMap.put("message", message);
-        hashMap.put("isseen", false);
+        hashMap.put("isSeen", false);
         hashMap.put("isNotified", false);
 
         reference.child("Chats").push().setValue(hashMap);
@@ -231,18 +269,20 @@ public class ChatWithUserActivity extends Activity {
 
     }
 
-    private void seenMessage(final String userid) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
-        seenListener = databaseReference.addValueEventListener(new ValueEventListener() {
+    //---------------------------------------- 'isSeen' update values in firebase if user seen message -------------------
+    private void checkIfCurrentUserSeenMessage() {
+        isSeenReference = FirebaseDatabase.getInstance().getReference().child("Chats");
+        isSeenEventListener = isSeenReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
+                    if (checkIfMessageBelongToCurrentUser(message)) {
+                        if (checkIfCurrentUserAreReceiver(message)) {
+                            updateDataInFirebase(snapshot);
 
-                    if (message.getReceiver().equals(firebaseUser.getUid()) && message.getSender().equals(userid)) {
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put("isseen", true);
-                        snapshot.getRef().updateChildren(hashMap);
+                        }
                     }
                 }
             }
@@ -254,7 +294,43 @@ public class ChatWithUserActivity extends Activity {
         });
     }
 
-    //----------------------------Service part and user status updater(Online offline) ----------------------------------------
+    private void updateDataInFirebase(DataSnapshot snapshot) {
+        HashMap hashMap = new HashMap();
+        hashMap.put("isSeen", true);
+        hashMap.put("isNotified", true);
+        snapshot.getRef().updateChildren(hashMap);
+    }
+
+    private boolean checkIfCurrentUserAreReceiver(Message message) {
+        return message.getReceiver().equals(currentUserId);
+    }
+
+    //---------------------------------------- Service part and user status updater(Online offline) -----------------------
+    @Override
+    protected void onStart() {
+        super.onStart();
+        stopNotificationService();
+    }
+
+    private void stopNotificationService() {
+        editor.putBoolean(getString(R.string.shared_pref_notification_value), false);
+        editor.commit();
+        stopService(serviceIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        isSeenReference.removeEventListener(isSeenEventListener);
+        startNotificationService();
+        super.onStop();
+    }
+
+    private void startNotificationService() {
+        startService(serviceIntent);
+        editor.putBoolean(getString(R.string.shared_pref_notification_value), true);
+        editor.commit();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -264,40 +340,16 @@ public class ChatWithUserActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        //databaseReference.removeEventListener(seenListener);
         status("offline");
     }
 
-    //Set status of current user in firebase (Online offline )
-    public static void status(String status) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
-        databaseReference.updateChildren(hashMap);
-    }
-    
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         finish();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

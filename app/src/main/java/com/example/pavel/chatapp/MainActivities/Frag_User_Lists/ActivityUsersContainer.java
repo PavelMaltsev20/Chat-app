@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities.UsersScreens;
+package com.example.pavel.chatapp.MainActivities.Frag_User_Lists;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,17 +10,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.example.pavel.chatapp.AdaptersAndModulus.FragmentAdapter;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
-import com.example.pavel.chatapp.MainActivities.Login_Register.ActivityLoginRegisterContainer;
 import com.example.pavel.chatapp.MainActivities.SupportActivities.ProfileActivity;
 import com.example.pavel.chatapp.R;
 import com.example.pavel.chatapp.Services.ConnectionBroadcastReceiver;
@@ -32,8 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import java.util.HashMap;
 
-import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
 
 public class ActivityUsersContainer extends AppCompatActivity {
 
@@ -143,12 +140,11 @@ public class ActivityUsersContainer extends AppCompatActivity {
                 return true;
             case R.id.menuSettings:
                 startActivity(new Intent(ActivityUsersContainer.this, SettingsActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                finish();
                 return true;
             case R.id.menuLogout:
-                mAuth.signOut();
-                Intent intent1 = new Intent(ActivityUsersContainer.this, ActivityLoginRegisterContainer.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent1);
                 finish();
+                mAuth.signOut();
                 return true;
         }
         return false;
@@ -176,8 +172,8 @@ public class ActivityUsersContainer extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         stopBroadcastReceiver();
     }
 
@@ -190,6 +186,16 @@ public class ActivityUsersContainer extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
+    //Set status of current user in firebase (Online offline )
+    public static void status(String status) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("status", status);
+            databaseReference.updateChildren(hashMap);
+        }
+    }
 
 }
 

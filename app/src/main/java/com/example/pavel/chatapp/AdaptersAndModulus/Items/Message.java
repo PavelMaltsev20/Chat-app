@@ -43,7 +43,7 @@ public class Message {
         this.message = message;
     }
 
-    public boolean isSeen() {
+    public boolean getSeen() {
         return isSeen;
     }
 

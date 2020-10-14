@@ -3,9 +3,7 @@ package com.example.pavel.chatapp.MainActivities.SupportActivities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import de.hdodenhof.circleimageview.CircleImageView;
-
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -20,11 +18,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
-import com.example.pavel.chatapp.MainActivities.UsersScreens.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,10 +40,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
-
 import java.util.HashMap;
 
-import static com.example.pavel.chatapp.MainActivities.ChatWithUserActivity.status;
+import static com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer.status;
+
 
 public class
 ProfileActivity extends AppCompatActivity {
@@ -373,6 +370,7 @@ ProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("username", email_name_et.getText().toString());
+                hashMap.put("search", email_name_et.getText().toString());
 
                 databaseReference.updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

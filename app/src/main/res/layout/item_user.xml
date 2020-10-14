@@ -36,20 +36,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/userItem_IV_statusOnline"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
-        android:background="@drawable/status_online"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/userItem_IV_statusOffline" />
-
-    <ImageView
-        android:id="@+id/userItem_IV_statusOffline"
+        android:id="@+id/userItem_IV_userStatus"
         android:layout_width="15dp"
         android:layout_height="15dp"
         android:background="@drawable/status_offline"
-        android:visibility="invisible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,6 +56,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/userItem_IV_profileImage"
         app:layout_constraintTop_toBottomOf="@+id/userItem_TV_userName" />
+
+    <ImageView
+        android:id="@+id/userItem_IV_newMessage"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:src="@drawable/message_small_icon"
+        android:background="@drawable/status_online"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="5dp"
+        android:visibility="gone"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
