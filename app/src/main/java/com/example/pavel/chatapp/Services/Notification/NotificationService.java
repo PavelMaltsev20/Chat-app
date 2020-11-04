@@ -152,7 +152,7 @@ public class NotificationService extends IntentService {
     private int initFlag() {
         return PendingIntent.FLAG_CANCEL_CURRENT;
     }
-
+    
     private NotificationCompat.Builder setDataToNotification(NotificationCompat.Builder notificationBuilder, String message, PendingIntent pendingIntent) {
         notificationBuilder.setContentTitle(secondUser.getUsername())
                 .setContentText(message)
