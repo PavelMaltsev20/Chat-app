@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivities.Frag_Login_Register.ActivityLoginRegisterContainer"
+            android:name=".MainActivities.LoginRegisterFrag.ActivityLoginRegisterContainer"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
         <activity android:name=".MainActivities.SupportActivities.SettingsActivity" />
         <activity android:name=".MainActivities.SupportActivities.ProfileActivity" />
         <activity android:name=".MainActivities.ChatWithUserActivity" />
-        <activity android:name=".MainActivities.Frag_User_Lists.ActivityUsersContainer" />
+        <activity android:name=".MainActivities.UserListsFrag.ActivityUsersContainer" />
         <activity android:name=".Services.Notification.App" />
 
         <service android:name=".Services.Notification.NotificationService" />

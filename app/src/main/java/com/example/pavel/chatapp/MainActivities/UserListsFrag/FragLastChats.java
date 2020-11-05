@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities.Frag_User_Lists;
+package com.example.pavel.chatapp.MainActivities.UserListsFrag;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -87,7 +87,7 @@ public class FragLastChats extends Fragment {
     private void getDataOfLastCommunicatedUsers() {
 
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 myUserList.clear();

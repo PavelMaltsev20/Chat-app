@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities.Frag_User_Lists;
+package com.example.pavel.chatapp.MainActivities.UserListsFrag;
 
 import android.os.Bundle;
 

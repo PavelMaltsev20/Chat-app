@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
 public class NoConnectionNotifier extends AppCompatActivity {

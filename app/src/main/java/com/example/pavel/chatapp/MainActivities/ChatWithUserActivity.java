@@ -1,7 +1,6 @@
 package com.example.pavel.chatapp.MainActivities;
 
 import android.app.Activity;
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +22,7 @@ import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.AdaptersAndModulus.MessageAdapter;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.Message;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
-import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.example.pavel.chatapp.Services.Notification.NotificationService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,7 +40,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer.status;
+import static com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer.status;
 
 
 public class ChatWithUserActivity extends Activity {

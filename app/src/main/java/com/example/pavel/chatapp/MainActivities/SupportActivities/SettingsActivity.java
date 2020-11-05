@@ -10,10 +10,10 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
-import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 
-import static com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer.status;
+import static com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer.status;
 
 
 public class SettingsActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.example.pavel.chatapp.MainActivities.Frag_Login_Register;
+package com.example.pavel.chatapp.MainActivities.LoginRegisterFrag;
 
 import android.content.Context;
 
@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.example.pavel.chatapp.AdaptersAndModulus.FragmentAdapter;
-import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

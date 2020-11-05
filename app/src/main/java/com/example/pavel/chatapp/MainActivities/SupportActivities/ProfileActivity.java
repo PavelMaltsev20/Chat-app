@@ -21,7 +21,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.pavel.chatapp.AdaptersAndModulus.Items.MyUser;
 import com.example.pavel.chatapp.AdaptersAndModulus.SharedPref;
-import com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer;
+import com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer;
 import com.example.pavel.chatapp.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,7 +42,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import java.util.HashMap;
 
-import static com.example.pavel.chatapp.MainActivities.Frag_User_Lists.ActivityUsersContainer.status;
+import static com.example.pavel.chatapp.MainActivities.UserListsFrag.ActivityUsersContainer.status;
 
 
 public class
