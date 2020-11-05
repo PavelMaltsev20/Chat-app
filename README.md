@@ -52,11 +52,11 @@ Further there will be examples of changing the username, user image and password
 
 <img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme/sett.changing%20user%20image.gif" width="350">
 
-<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme/sett.changing%20password.gif" height="300" width="350">
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme/sett.changing%20password.gif" height="300" width="500">
 
-The last one is to change the user's email and try to log in with a new email.
+The last one is changing the user's email and trying to log in with a new email.
 
-<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme/sett.changing%20email.gif" height="300" width="350">
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme/sett.changing%20email.gif" height="350" width="350">
 
 You can also see that the email was changed in firebase.
 
