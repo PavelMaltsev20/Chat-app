@@ -41,6 +41,33 @@ It is also possible to search for users.
 
 <img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/search%20edit%20text.gif" height="300" width="350">
 
+Now there will be examples of setting up the application and user profile:
+
+First, let's change the theme of the application and save it in a shared preference.
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/theme%201.gif" height="300" width="350">
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/theme%202.gif" height="300" width="350">
+
+Further there will be examples of changing the username, user image and password.
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/Changing%20name.gif" height="300" width="350">
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/user%20image.gif" width="350">
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/pass%20changing.gif" height="300" width="350">
+
+The last one is to change the user's email and try to log in with a new email.
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/changing%20email.gif" height="300" width="350">
+
+You can also see that the email was changed in firebase.
+
+<img src="https://github.com/PavelMaltsev20/Chat-app/blob/master/readme.img/email%20of%20existed%20users.jpg" height="300" width="750">
+
+
+Thank you for your interest in my project, at any time you can contact me for more information.
+
 
 
 
